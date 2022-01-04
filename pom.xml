@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>BlockChain</groupId>
+	<artifactId>BlockChain</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<name>BlockChain</name>
+	<description>BlockChain Project</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<junit-jupiter.version>5.8.2</junit-jupiter.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>gabywald</groupId>
+			<artifactId>utilities</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+		</dependency>
+		<!-- For cryptocurrencies tests and tutorials -->
+		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+		<!-- <dependency> <groupId>com.google.code.gson</groupId> <artifactId>gson</artifactId> 
+			<version>2.8.8</version> </dependency> -->
+		<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15to18 -->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15to18</artifactId>
+			<version>1.69</version>
+		</dependency>
+        <!-- junit 5 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit-jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+	</dependencies>
+</project>
