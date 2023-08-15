@@ -116,6 +116,8 @@ public class Block extends JSONifiable {
 	public List<Transaction> getTransactions() 
 		{ return this.transactions; }
 	
+	void setTransactions(List<Transaction> transactions)
+		{ this.transactions = transactions; }
 	
 	@Override
 	protected void setKeyValues() {
