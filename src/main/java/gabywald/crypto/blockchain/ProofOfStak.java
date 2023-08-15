@@ -1,0 +1,15 @@
+package gabywald.crypto.blockchain;
+
+/**
+ * 
+ * @author Gabriel Chandesris (2023). 
+ */
+public class ProofOfStak implements ProofInterface {
+
+	@Override
+	public void proofTreatment() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+}
