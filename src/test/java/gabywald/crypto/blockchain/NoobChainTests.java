@@ -14,7 +14,7 @@ import gabywald.global.json.JSONifiable;
 
 /**
  * Tests about BlockChain / NoobChain. 
- * @author Gabriel Chandesris (2021)
+ * @author Gabriel Chandesris (2021, 2023)
  */
 class NoobChainTests {
 
@@ -92,7 +92,7 @@ class NoobChainTests {
 	
 	@Test
 	void testPart04() {
-		// Setup Bouncey castle as a Security Provider
+		// Setup Bouncy castle as a Security Provider
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); 
 		// Security.addProvider(new sun.security.provider.Sun());
 		// XXX NOTE see https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html
@@ -109,12 +109,12 @@ class NoobChainTests {
 		Assertions.assertNotNull( walletA.getPublicKey() );
 		Assertions.assertNotNull( walletB.getPrivateKey() );
 		Assertions.assertNotNull( walletB.getPublicKey() );
-		//Create a test transaction from WalletA to walletB 
+		// Create a test transaction from WalletA to walletB 
 		Transaction transaction = new Transaction(walletA.getPublicKey(), walletB.getPublicKey(), 5, null);
 		Assertions.assertNotNull( transaction );
 		transaction.generateSignature(walletA.getPrivateKey());
 		Assertions.assertNotNull( walletA.getPrivateKey() );
-		//Verify the signature works and verify it from the public key
+		// Verify the signature works and verify it from the public key
 		System.out.println("Is signature verified");
 		System.out.println(transaction.verifySignature());
 		Assertions.assertTrue( transaction.verifySignature() );
@@ -130,7 +130,7 @@ class NoobChainTests {
 		int difficulty = 3;
 		float minimumTransaction = 0.1f;
 		
-		// Setup Bouncey castle as a Security Provider
+		// Setup Bouncy castle as a Security Provider
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
 		// Create wallets:
@@ -181,7 +181,7 @@ class NoobChainTests {
 		System.out.println("\nWalletA Attempting to send more funds (1000) than it has...");
 		boolean bBlock2AddTransactionResult = block2.addTransaction(	walletA.sendFunds(walletB.getPublicKey(), 1000f, mapUTXOs), 
 																		mapUTXOs, minimumTransaction);
-		Assertions.assertFalse( bBlock2AddTransactionResult);
+		Assertions.assertFalse( bBlock2AddTransactionResult );
 		Assertions.assertTrue( BlockChain.addBlock(blockchain, block2, difficulty) );
 		System.out.println("\nWalletA's balance is: " + walletA.getBalance( mapUTXOs ));
 		System.out.println("WalletB's balance is: " + walletB.getBalance( mapUTXOs ));
