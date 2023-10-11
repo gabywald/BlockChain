@@ -43,7 +43,7 @@ public class Transaction extends JSONifiable {
 		this.sender = from;
 		this.recipient = to;
 		this.value = value;
-		this.inputs = inputs;
+		this.inputs = (inputs != null)?inputs:this.inputs;
 	}
 
 	/** 
@@ -191,6 +191,8 @@ public class Transaction extends JSONifiable {
 	 */
 	public float getInputsValue() {
 		float total = 0;
+		// if (inputs == null) { return this.getOutputsValue(); }
+		// if (inputs == null) { return total; }
 		for (TransactionInput ti : inputs) {
 			// If Transaction can't be found skip it
 			if ( ti.getTransactionOutput() == null)  { continue; } 

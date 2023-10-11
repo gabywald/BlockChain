@@ -131,9 +131,8 @@ public abstract class StringUtils {
 	public static String getMerkleRoot(List<Transaction> transactions) {
 		int count = transactions.size();
 		List<String> previousTreeLayer = new ArrayList<String>();
-		for (Transaction transaction : transactions) {
-			previousTreeLayer.add(transaction.getTransactionId());
-		}
+		for (Transaction transaction : transactions) 
+			{ previousTreeLayer.add(transaction.getTransactionId()); }
 		List<String> treeLayer = previousTreeLayer;
 		while (count > 1) {
 			treeLayer = new ArrayList<String>();

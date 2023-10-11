@@ -19,16 +19,16 @@ public class TransactionOutput {
 	
 	/**
 	 * Constructor
-	 * @param reciepient
+	 * @param recipient
 	 * @param value
 	 * @param parentTransactionId
 	 */
-	public TransactionOutput(PublicKey reciepient, float value, String parentTransactionId) {
-		this.recipient = reciepient;
+	public TransactionOutput(PublicKey recipient, float value, String parentTransactionId) {
+		this.recipient = recipient;
 		this.value = value;
 		this.parentTransactionId = parentTransactionId;
 		
-		this.id = StringUtils.applySha256(StringUtils.getStringFromKey(reciepient) 
+		this.id = StringUtils.applySha256(StringUtils.getStringFromKey(recipient) 
 				+ Float.toString(value) + parentTransactionId);
 	}
 	

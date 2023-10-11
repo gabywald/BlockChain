@@ -14,7 +14,7 @@ import gabywald.global.json.JSONifiable;
 
 /**
  * Tests about BlockChain / NoobChain. 
- * @author Gabriel Chandesris (2021)
+ * @author Gabriel Chandesris (2021, 2023)
  */
 class NoobChainTests {
 
@@ -28,12 +28,12 @@ class NoobChainTests {
 		System.out.println("Hash for block 1 : " + genesisBlock.getHash() );
 		Assertions.assertNotNull( genesisBlock.getHash() );
 		
-		Block secondBlock = new Block("Yo im the second block", genesisBlock.getHash() );
+		Block secondBlock = new Block("Yo im the second block", genesisBlock );
 		Assertions.assertNotNull( secondBlock );
 		System.out.println("Hash for block 2 : " + secondBlock.getHash() );
 		Assertions.assertNotNull( secondBlock.getHash() );
 		
-		Block thirdBlock = new Block("Hey im the third block", secondBlock.getHash() );
+		Block thirdBlock = new Block("Hey im the third block", secondBlock );
 		Assertions.assertNotNull( thirdBlock );
 		System.out.println("Hash for block 3 : " + thirdBlock.getHash() );
 		Assertions.assertNotNull( thirdBlock.getHash() );
@@ -66,15 +66,18 @@ class NoobChainTests {
 		// Add our blocks to the blockchain List:
 		blockchain.add(new Block("Hi im the first block", "0"));
 		System.out.println("Trying to Mine block 1... ");
-		blockchain.get(0).mineBlock(difficulty);
+		ProofInterface ipi0 = new ProofOfWork(blockchain.get(0), difficulty);
+		Assertions.assertNotNull(ipi0.proofTreatment());
 
 		blockchain.add(new Block("Yo im the second block", blockchain.get(blockchain.size()-1).getHash() ));
 		System.out.println("Trying to Mine block 2... ");
-		blockchain.get(1).mineBlock(difficulty);
+		ProofInterface ipi1 = new ProofOfWork(blockchain.get(1), difficulty);
+		Assertions.assertNotNull(ipi1.proofTreatment());
 
 		blockchain.add(new Block("Hey im the third block", blockchain.get(blockchain.size()-1).getHash() ));
 		System.out.println("Trying to Mine block 3... ");
-		blockchain.get(2).mineBlock(difficulty);
+		ProofInterface ipi2 = new ProofOfWork(blockchain.get(2), difficulty);
+		Assertions.assertNotNull(ipi2.proofTreatment());
 		
 		Assertions.assertEquals(3,  blockchain.size());
 		
@@ -92,7 +95,7 @@ class NoobChainTests {
 	
 	@Test
 	void testPart04() {
-		// Setup Bouncey castle as a Security Provider
+		// Setup Bouncy castle as a Security Provider
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); 
 		// Security.addProvider(new sun.security.provider.Sun());
 		// XXX NOTE see https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html
@@ -109,12 +112,12 @@ class NoobChainTests {
 		Assertions.assertNotNull( walletA.getPublicKey() );
 		Assertions.assertNotNull( walletB.getPrivateKey() );
 		Assertions.assertNotNull( walletB.getPublicKey() );
-		//Create a test transaction from WalletA to walletB 
+		// Create a test transaction from WalletA to walletB 
 		Transaction transaction = new Transaction(walletA.getPublicKey(), walletB.getPublicKey(), 5, null);
 		Assertions.assertNotNull( transaction );
 		transaction.generateSignature(walletA.getPrivateKey());
 		Assertions.assertNotNull( walletA.getPrivateKey() );
-		//Verify the signature works and verify it from the public key
+		// Verify the signature works and verify it from the public key
 		System.out.println("Is signature verified");
 		System.out.println(transaction.verifySignature());
 		Assertions.assertTrue( transaction.verifySignature() );
@@ -130,7 +133,7 @@ class NoobChainTests {
 		int difficulty = 3;
 		float minimumTransaction = 0.1f;
 		
-		// Setup Bouncey castle as a Security Provider
+		// Setup Bouncy castle as a Security Provider
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
 		// Create wallets:
@@ -139,26 +142,31 @@ class NoobChainTests {
 		Wallet coinbase = new Wallet();
 
 		// Create genesis transaction, which sends 100 NoobCoin to walletA: 
-		Transaction genesisTransaction = new Transaction(coinbase.getPublicKey(), walletA.getPublicKey(), 100f, null);
+		Transaction genesisTransaction = new Transaction(coinbase.getPublicKey(), walletA.getPublicKey(), 100f, null /* null */);
 		Assertions.assertNotNull( genesisTransaction );
 		// Manually sign the genesis transaction
 		genesisTransaction.generateSignature(coinbase.getPrivateKey());
 		// Manually set the transaction id
 		genesisTransaction.setTransactionId( "0" );
 		// Manually add the Transactions Output
-		genesisTransaction.getOutputs().add(new TransactionOutput(	genesisTransaction.getRecipient(), 
-																	genesisTransaction.getValue(), 
-																	genesisTransaction.getTransactionId() ));
+		TransactionOutput trOut = new TransactionOutput(genesisTransaction.getRecipient(), 
+														genesisTransaction.getValue(), 
+														genesisTransaction.getTransactionId() );
+		genesisTransaction.getOutputs().add( trOut );
+		// Manually add the Transactions Input
+		TransactionInput trInp = new TransactionInput(trOut.getId());
+		trInp.setTransactionOutput( trOut );
+		genesisTransaction.getInputs().add( trInp );
 		
 		// Its important to store our first transaction in the UTXOs list.
 		mapUTXOs.put(genesisTransaction.getOutputs().get(0).getId(), genesisTransaction.getOutputs().get(0));
 		System.out.println("Creating and Mining Genesis block... ");
 		Block genesis = new Block("0");
 		genesis.addTransaction(genesisTransaction, mapUTXOs, minimumTransaction);
-		BlockChain.addBlock(blockchain, genesis, difficulty);
+		BlockChain.addBlock(blockchain, genesis, new ProofOfWork(genesis, difficulty) );
 
 		// Testing
-		Block block1 = new Block(genesis.getHash() );
+		Block block1 = new Block(genesis.getHash());
 		System.out.println("\nWalletA's balance is: " + walletA.getBalance( mapUTXOs ));
 		
 		Assertions.assertEquals(100, walletA.getBalance( mapUTXOs ));
@@ -167,22 +175,25 @@ class NoobChainTests {
 		boolean bBlock1AddTransactionResult = block1.addTransaction(	walletA.sendFunds(walletB.getPublicKey(), 40f, mapUTXOs), 
 																		mapUTXOs, minimumTransaction) ;
 		Assertions.assertTrue( bBlock1AddTransactionResult );
-		Assertions.assertTrue( BlockChain.addBlock(blockchain, block1, difficulty) );
+		Assertions.assertTrue( BlockChain.addBlock(blockchain, block1, new ProofOfWork(blockchain.get(blockchain.size()-1), difficulty) ) );
 		System.out.println("\nWalletA's balance is: " + walletA.getBalance( mapUTXOs ));
 		System.out.println("WalletB's balance is: " + walletB.getBalance( mapUTXOs ));
 		
 		Assertions.assertEquals(60, walletA.getBalance( mapUTXOs ));
 		Assertions.assertEquals(40, walletB.getBalance( mapUTXOs ));
 		
-		boolean isChainValid = BlockChain.isChainValidV2( blockchain, genesisTransaction, difficulty );
+		boolean isChainValid = true; // BlockChain.isChainValidV1( blockchain );
+		// Assertions.assertTrue( isChainValid );
+		
+		isChainValid = BlockChain.isChainValidV2( blockchain, genesisTransaction, difficulty );
 		Assertions.assertTrue( isChainValid );
 
-		Block block2 = new Block(block1.getHash() );
+		Block block2 = new Block(block1.getHash());
 		System.out.println("\nWalletA Attempting to send more funds (1000) than it has...");
 		boolean bBlock2AddTransactionResult = block2.addTransaction(	walletA.sendFunds(walletB.getPublicKey(), 1000f, mapUTXOs), 
 																		mapUTXOs, minimumTransaction);
-		Assertions.assertFalse( bBlock2AddTransactionResult);
-		Assertions.assertTrue( BlockChain.addBlock(blockchain, block2, difficulty) );
+		Assertions.assertFalse( bBlock2AddTransactionResult );
+		Assertions.assertTrue( BlockChain.addBlock(blockchain, block2, new ProofOfWork(blockchain.get(blockchain.size()-1), difficulty) ) );
 		System.out.println("\nWalletA's balance is: " + walletA.getBalance( mapUTXOs ));
 		System.out.println("WalletB's balance is: " + walletB.getBalance( mapUTXOs ));
 		
@@ -192,12 +203,13 @@ class NoobChainTests {
 		isChainValid = BlockChain.isChainValidV2( blockchain, genesisTransaction, difficulty );
 		Assertions.assertTrue( isChainValid );
 
-		Block block3 = new Block(block2.getHash() );
+		Block block3 = new Block(block2.getHash());
 		System.out.println("\nWalletB is Attempting to send funds (20) to WalletA...");
 		boolean bBlock3AddTransactionResult = block3.addTransaction(	walletB.sendFunds( walletA.getPublicKey(), 20f, mapUTXOs), 
 																		mapUTXOs, minimumTransaction);
 		
 		Assertions.assertTrue( bBlock3AddTransactionResult );
+		Assertions.assertTrue( BlockChain.addBlock(blockchain, block3, new ProofOfWork(blockchain.get(blockchain.size()-1), difficulty) ) );
 		System.out.println("\nWalletA's balance is: " + walletA.getBalance( mapUTXOs ));
 		System.out.println("WalletB's balance is: " + walletB.getBalance( mapUTXOs ));
 		

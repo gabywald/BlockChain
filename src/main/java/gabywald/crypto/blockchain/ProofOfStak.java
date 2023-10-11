@@ -7,9 +7,9 @@ package gabywald.crypto.blockchain;
 public class ProofOfStak implements ProofInterface {
 
 	@Override
-	public void proofTreatment() {
+	public Block proofTreatment() {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
 	
 }
