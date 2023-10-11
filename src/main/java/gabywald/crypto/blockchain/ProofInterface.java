@@ -6,6 +6,6 @@ package gabywald.crypto.blockchain;
  */
 public interface ProofInterface {
 	
-	public void proofTreatment();
+	public Block proofTreatment();
 
 }
