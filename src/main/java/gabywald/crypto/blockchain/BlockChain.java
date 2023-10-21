@@ -3,6 +3,7 @@ package gabywald.crypto.blockchain;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 /**
  * 
@@ -32,12 +33,15 @@ public class BlockChain {
 			currentBlock = blockchain.get(i);
 			previousBlock = blockchain.get(i-1);
 			// Compare registered hash and calculated hash:
-			if ( ! currentBlock.getHash().equals(currentBlock.calculateHash()) ) {
+			String calculatedHash = BlockChain.calculateHash(currentBlock.getPreviousHash(), currentBlock.getTimeStamp(), currentBlock.getMerkleRoot(), 0);
+			if ( ! currentBlock.getHash().equals(calculatedHash) ) {
+				System.out.println( currentBlock.getHash() + " / " + calculatedHash);
 				System.out.println("Current Hashes not equal");			
 				return false;
 			}
 			// Compare previous hash and registered previous hash
 			if ( ! previousBlock.getHash().equals(currentBlock.getPreviousHash() ) ) {
+				System.out.println( previousBlock.getHash() + " ?? " + currentBlock.getPreviousHash() );
 				System.out.println("Previous Hashes not equal");
 				return false;
 			}
@@ -68,19 +72,22 @@ public class BlockChain {
 			previousBlock = blockchain.get(i-1);
 			
 			// Compare registered hash and calculated hash:
-			if ( ! currentBlock.getHash().equals(currentBlock.calculateHash()) ) {
+			String calculatedHash = BlockChain.calculateHash(currentBlock.getPreviousHash(), currentBlock.getTimeStamp(), currentBlock.getMerkleRoot(), 0);
+			if ( ! currentBlock.getHash().equals(calculatedHash) ) {
+				System.out.println( currentBlock.getHash() + " / " + calculatedHash);
 				System.out.println("#Current Hashes not equal");
 				return false;
 			}
 			
 			// Compare previous hash and registered previous hash
 			if ( ! previousBlock.getHash().equals(currentBlock.getPreviousHash() ) ) {
+				System.out.println( previousBlock.getHash() + " ?? " + currentBlock.getPreviousHash() );
 				System.out.println("#Previous Hashes not equal");
 				return false;
 			}
 			
 			// Check if hash is solved
-			if ( ! currentBlock.getHash().substring( 0, difficulty).equals(hashTarget)) {
+			if ( ! currentBlock.getComputedHash().substring(0, difficulty).equals(hashTarget)) {
 				System.out.println("#This block hasn't been mined");
 				return false;
 			}
@@ -96,7 +103,8 @@ public class BlockChain {
 				}
 				
 				if (currentTransaction.getInputsValue() != currentTransaction.getOutputsValue()) {
-					System.out.println("#Inputs are note equal to outputs on Transaction(" + t + ")");
+					System.out.println(currentTransaction.getInputsValue() + " / " + currentTransaction.getOutputsValue());
+					System.out.println("#Inputs are not equal to outputs on Transaction(" + t + ")");
 					return false; 
 				}
 
@@ -121,11 +129,11 @@ public class BlockChain {
 				}
 
 				if (currentTransaction.getOutputs().get(0).getRecipient() != currentTransaction.getRecipient()) {
-					System.out.println("#Transaction(" + t + ") output reciepient is not who it should be");
+					System.out.println("#Transaction(" + t + ") output recipient is not who it should be");
 					return false;
 				}
 				
-				if (currentTransaction.getOutputs().get(1).getRecipient() != currentTransaction.getSender()) {
+				if (currentTransaction.getOutputs().get(0).getRecipient() == currentTransaction.getSender()) {
 					System.out.println("#Transaction(" + t + ") output 'change' is not sender.");
 					return false;
 				}
@@ -137,9 +145,46 @@ public class BlockChain {
 		return true;
 	}
 
-	public static boolean addBlock(final List<Block> blockchain, final Block newBlock, final int difficulty) {
-		newBlock.mineBlock(difficulty);
-		return blockchain.add(newBlock);
+	public static boolean addBlock(final List<Block> blockchain, final Block prevBlock, final ProofInterface ipi) 
+		{ return blockchain.add(ipi.proofTreatment()); }
+	
+	/**
+	 * Calculate new hash based on blocks content. 
+	 * @param prevHash
+	 * @param timeStamp
+	 * @param merkleRoot
+	 * @param nonce
+	 * @return (null if exception apply internally). 
+	 * @see StringUtils#applySha256(String)
+	 */
+	public static String calculateHash(String prevHash, long timeStamp, String merkleRoot, int nonce) {
+		String calculatedhash = StringUtils.applySha256( 
+					prevHash +
+					Long.toString(timeStamp) +
+					Integer.toString(nonce) + 
+					merkleRoot
+					);
+		return calculatedhash;
+	}
+	
+	public static String computeValidHash(String prevHash, long timeStamp, String merkleRoot, int difficulty) {
+		String hash = "";
+		Random rand = new Random();
+		int nonce = 0;
+		
+		while( ! BlockChain.isValid(hash, difficulty)) {
+			nonce = rand.nextInt(); // this.nonce++;
+			hash = BlockChain.calculateHash(prevHash, timeStamp, merkleRoot, nonce);
+			// XXX NOTE if exception inside calculateHash : hash will be null !
+		}
+		return hash;
+	}
+	
+	private static boolean isValid(String hash, int difficulty) {
+//		BigInteger hashInt = new BigInteger(hash, 16);
+//		return (hashInt.compareTo(this.target) < 0);
+		String target = StringUtils.getDifficultyString(difficulty);
+		return (hash != null) && ( ! hash.isEmpty()) &&  (hash.substring( 0, difficulty ).equals(target));
 	}
 
 }

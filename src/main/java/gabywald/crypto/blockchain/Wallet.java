@@ -104,7 +104,7 @@ public class Wallet {
 			if (total > value) { break; }
 		}
 
-		Transaction newTransaction = new Transaction(this.publicKey, recipient , value, inputs);
+		Transaction newTransaction = new Transaction(this.publicKey, recipient, value, inputs);
 		newTransaction.generateSignature(this.privateKey);
 
 		// for (TransactionInput input : inputs) 
