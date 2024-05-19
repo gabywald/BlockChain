@@ -7,7 +7,7 @@ import java.util.Random;
 
 /**
  * 
- * @author Gabriel Chandesris (2021)
+ * @author Gabriel Chandesris (2021, 2024)
  */
 public class BlockChain {
 	
@@ -70,6 +70,11 @@ public class BlockChain {
 
 			currentBlock = blockchain.get(i);
 			previousBlock = blockchain.get(i-1);
+			
+			// TODO 20240519 (bug, known before) check this part, why currentBlock could be 'null' here ?? !!
+			// ***** Could be "if ( (currentBlock == null) || (previousBlock == null) ) { return false; }"
+			if ( (currentBlock == null) && (previousBlock != null) ) { return false; }
+			if ( (currentBlock != null) && (previousBlock == null) ) { return false; }
 			
 			// Compare registered hash and calculated hash:
 			String calculatedHash = BlockChain.calculateHash(currentBlock.getPreviousHash(), currentBlock.getTimeStamp(), currentBlock.getMerkleRoot(), 0);
