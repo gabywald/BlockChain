@@ -75,6 +75,7 @@ public class BlockChain {
 			// ***** Could be "if ( (currentBlock == null) || (previousBlock == null) ) { return false; }"
 			if ( (currentBlock == null) && (previousBlock != null) ) { return false; }
 			if ( (currentBlock != null) && (previousBlock == null) ) { return false; }
+			// NOTE analyse HERE
 			
 			// Compare registered hash and calculated hash:
 			String calculatedHash = BlockChain.calculateHash(currentBlock.getPreviousHash(), currentBlock.getTimeStamp(), currentBlock.getMerkleRoot(), 0);
