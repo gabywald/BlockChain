@@ -227,7 +227,7 @@ class NoobChainTests {
 		
 		Map<String, TransactionOutput> mapUTXOs = new HashMap<String, TransactionOutput>();
 		
-		int difficulty = 3;
+		int difficulty = ProofOfStak.STAK_DIFFICULTY;
 		float minimumTransaction = 0.1f;
 		
 		// Setup Bouncy castle as a Security Provider
@@ -260,7 +260,7 @@ class NoobChainTests {
 		System.out.println("Creating and Mining Genesis block... ");
 		Block genesis = new Block("0");
 		genesis.addTransaction(genesisTransaction, mapUTXOs, minimumTransaction);
-		BlockChain.addBlock(blockchain, genesis, new ProofOfWork(genesis, difficulty) );
+		BlockChain.addBlock(blockchain, genesis, new ProofOfStak( genesis ) );
 		
 		// Testing
 		Block block1 = new Block(genesis.getHash());
@@ -272,7 +272,7 @@ class NoobChainTests {
 		boolean bBlock1AddTransactionResult = block1.addTransaction(	walletA.sendFunds(walletB.getPublicKey(), 40f, mapUTXOs), 
 																		mapUTXOs, minimumTransaction) ;
 		Assertions.assertTrue( bBlock1AddTransactionResult );
-		Assertions.assertTrue( BlockChain.addBlock(blockchain, block1, new ProofOfStak() ) );
+		Assertions.assertTrue( BlockChain.addBlock(blockchain, block1, new ProofOfStak( block1 ) ) );
 		System.out.println("\nWalletA's balance is: " + walletA.getBalance( mapUTXOs ));
 		System.out.println("WalletB's balance is: " + walletB.getBalance( mapUTXOs ));
 		
@@ -290,7 +290,7 @@ class NoobChainTests {
 		boolean bBlock2AddTransactionResult = block2.addTransaction(	walletA.sendFunds(walletB.getPublicKey(), 1000f, mapUTXOs), 
 																		mapUTXOs, minimumTransaction);
 		Assertions.assertFalse( bBlock2AddTransactionResult );
-		Assertions.assertTrue( BlockChain.addBlock(blockchain, block2, new ProofOfStak() ) );
+		Assertions.assertTrue( BlockChain.addBlock(blockchain, block2, new ProofOfStak( block2 ) ) );
 		System.out.println("\nWalletA's balance is: " + walletA.getBalance( mapUTXOs ));
 		System.out.println("WalletB's balance is: " + walletB.getBalance( mapUTXOs ));
 		
@@ -306,7 +306,7 @@ class NoobChainTests {
 																		mapUTXOs, minimumTransaction);
 		
 		Assertions.assertTrue( bBlock3AddTransactionResult );
-		Assertions.assertTrue( BlockChain.addBlock(blockchain, block3, new ProofOfStak() ) );
+		Assertions.assertTrue( BlockChain.addBlock(blockchain, block3, new ProofOfStak( block3 ) ) );
 		System.out.println("\nWalletA's balance is: " + walletA.getBalance( mapUTXOs ));
 		System.out.println("WalletB's balance is: " + walletB.getBalance( mapUTXOs ));
 		

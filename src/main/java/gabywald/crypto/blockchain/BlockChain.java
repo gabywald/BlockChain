@@ -71,11 +71,9 @@ public class BlockChain {
 			currentBlock = blockchain.get(i);
 			previousBlock = blockchain.get(i-1);
 			
-			// TODO 20240519 (bug, known before) check this part, why currentBlock could be 'null' here ?? !!
-			// ***** Could be "if ( (currentBlock == null) || (previousBlock == null) ) { return false; }"
+			// NOTE ***** Could be "if ( (currentBlock == null) || (previousBlock == null) ) { return false; }"
 			if ( (currentBlock == null) && (previousBlock != null) ) { return false; }
 			if ( (currentBlock != null) && (previousBlock == null) ) { return false; }
-			// NOTE analyse HERE
 			
 			// Compare registered hash and calculated hash:
 			String calculatedHash = BlockChain.calculateHash(currentBlock.getPreviousHash(), currentBlock.getTimeStamp(), currentBlock.getMerkleRoot(), 0);
