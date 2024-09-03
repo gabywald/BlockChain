@@ -171,6 +171,15 @@ public class BlockChain {
 		return calculatedhash;
 	}
 	
+	/**
+	 * Compute Hash with given difficulty (longest step for ProofOfWork). 
+	 * @param prevHash
+	 * @param timeStamp
+	 * @param merkleRoot
+	 * @param difficulty
+	 * @return
+	 * @see BlockChain#calculateHash(String, long, String, int)
+	 */
 	public static String computeValidHash(String prevHash, long timeStamp, String merkleRoot, int difficulty) {
 		String hash = "";
 		Random rand = new Random();

@@ -24,7 +24,7 @@ public class ProofOfWork implements ProofInterface {
 		
 		String hash = BlockChain.computeValidHash(this.bloc.getHash(), this.bloc.getTimeStamp(), this.bloc.getMerkleRoot(), difficulty);
 		
-		System.out.println("Block Mined!!! : '" + hash + "'");
+		System.out.println("Block Mined!!! : '" + hash + "'" ); // "' \n prev '" + this.bloc.getPreviousHash() + "'");
 		newBloc.setComputedHash(hash);
 		
 		return newBloc;

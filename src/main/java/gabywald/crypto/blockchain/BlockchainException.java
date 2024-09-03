@@ -7,8 +7,6 @@ package gabywald.crypto.blockchain;
 @SuppressWarnings("serial")
 public class BlockchainException extends Exception {
 
-	public BlockchainException(String msg) {
-		super(msg);
-	}
+	public BlockchainException(String msg) { super(msg); }
 	
 }

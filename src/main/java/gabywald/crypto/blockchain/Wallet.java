@@ -24,9 +24,8 @@ public class Wallet {
 	private PrivateKey privateKey = null;
 	private PublicKey publicKey = null;
 
-	public Wallet() {
-		this.generateKeyPair();	
-	}
+	public Wallet() 
+		{ this.generateKeyPair(); }
 	
 	public PrivateKey getPrivateKey() 
 		{ return this.privateKey; }
@@ -60,6 +59,12 @@ public class Wallet {
 			// throw new BlockchainException("StringUtils: InvalidAlgorithmParameterException: " + iape.getMessage());
 			System.out.println( "StringUtils: InvalidAlgorithmParameterException: " + iape.getMessage() );
 		} 
+		
+		// NOTE : some more check about this if excpetion above ?!
+//		if ( (this.privateKey == null) || (this.publicKey == null) ) {
+//			System.err.println( "ERROR ON KEYS !!" );
+//			System.exit(42);
+//		}
 	}
 
 	/**
