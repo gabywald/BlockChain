@@ -2,3 +2,6 @@
 #medium #blockchain "Creating Your First Blockchain with Java. Part 1." #programmers #java #ProofOfWork ... https://medium.com/programmers-blockchain/create-simple-blockchain-java-tutorial-from-scratch-6eeed3cb03fa
 #medium #blockchain "Creating Your First Blockchain with Java. Part 2." #programmers #java #transactions ... https://medium.com/programmers-blockchain/creating-your-first-blockchain-with-java-part-2-transactions-2cdac335e0ce
 #medium #blockchain "Blockchain Development — Zero to Hero [Guide]" #programmers #development #guide ... https://medium.com/programmers-blockchain/blockchain-development-mega-guide-5a316e6d10df
+
+https://www.javatpoint.com/blockchain-java
+https://www.baeldung.com/java-blockchain

@@ -1,27 +1,42 @@
 package gabywald.crypto.blockchain;
 
+import gabywald.global.json.JSONException;
+import gabywald.global.json.JSONValue;
+import gabywald.global.json.JSONifiable;
+
 /**
- * TransactionInput of BlockChain. 
- * <br/><a href="https://medium.com/programmers-blockchain/creating-your-first-blockchain-with-java-part-2-transactions-2cdac335e0ce">https://medium.com/programmers-blockchain/creating-your-first-blockchain-with-java-part-2-transactions-2cdac335e0ce</a>
- * <br/><a href="https://github.com/CryptoKass/NoobChain-Tutorial-Part-2">https://github.com/CryptoKass/NoobChain-Tutorial-Part-2</a>
- * @author Gabriel Chandesris (2021)
+ * TransactionInput of BlockChain ; to gather informations for making TransactionOuput / Transfert. 
+ * @author Gabriel Chandesris (2021, 2024)
  */
-public class TransactionInput {
-	/** Reference to TransactionOutputs -> transactionId */
-	private String transactionOutputId = null;
+public class TransactionInput extends JSONifiable {
 	/** Contains the Unspent transaction output */
 	private TransactionOutput to = null;
 	
-	public TransactionInput(String transactionOutputId) {
-		this.transactionOutputId = transactionOutputId;
-	}
-
+	public TransactionInput(TransactionOutput to) 
+		{  this.to = to; }
+	
 	public String getTransactionOutputId() 
-		{ return this.transactionOutputId; }
-
+		{ return this.to.getId(); }
+	
 	public TransactionOutput getTransactionOutput() 
 		{ return this.to; }
 	
 	void setTransactionOutput(TransactionOutput to) 
 		{ this.to = to; }
+	
+	@Override
+	protected void setKeyValues() {
+		this.put("to", JSONValue.instanciate( this.to.toString() ) );
+	}
+
+	@Override
+	protected <T extends JSONifiable> T reloadFrom(String json) 
+			throws JSONException { return null; }
+	
+	@Override
+	public String toString() {
+		StringBuilder sbToReturn = new StringBuilder();
+		sbToReturn.append("to").append(": ").append( this.to ).append("\n");
+		return sbToReturn.toString();
+	}
 }

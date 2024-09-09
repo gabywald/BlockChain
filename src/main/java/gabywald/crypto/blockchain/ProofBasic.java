@@ -4,22 +4,21 @@ import java.util.Random;
 
 /**
  * 
- * TODO add stak interaction here !!
- * @author Gabriel Chandesris (2023-2024). 
+ * @author Gabriel Chandesris (2024). 
  */
-public class ProofOfStak extends ProofAbstract {
+public class ProofBasic extends ProofAbstract {
 	
 	// To Simplify with a low constant value compare to Proof Of Work !!
-	public static final int STAK_DIFFICULTY = 0;
+	public static final int BASIC_DIFFICULTY = 0;
 
 	/**
 	 * Default Constructor. 
 	 * @param bloc
 	 * @param difficulty Value is ignored (set to 0). 
-	 * <àsee {@link ProofOfStak#STAK_DIFFICULTY}
+	 * <àsee {@link ProofBasic#STAK_DIFFICULTY}
 	 */
-	public ProofOfStak(Block bloc, Integer difficulty) 
-		{ super(bloc, ProofOfStak.STAK_DIFFICULTY); }
+	public ProofBasic(Block bloc, Integer difficulty) 
+		{ super(bloc, ProofBasic.BASIC_DIFFICULTY); }
 
 	@Override
 	public Block proofTreatment() {
@@ -30,7 +29,7 @@ public class ProofOfStak extends ProofAbstract {
 		
 		String hash = BlockChain.calculateHash(this.bloc.getHash(), this.bloc.getTimeStamp(), this.bloc.getMerkleRoot(), rand.nextInt());
 		
-		System.out.println("Block Computed !! : '" + hash + "'" ); // "' \n prev '" + this.bloc.getPreviousHash() + "'");
+		System.out.println("Block Computed !! : '" + hash + "'" );
 		newBloc.setComputedHash(hash);
 		
 		return newBloc;
