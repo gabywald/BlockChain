@@ -17,7 +17,7 @@ import java.util.Map;
  * Wallet of BlockChain. 
  * <br/><a href="https://medium.com/programmers-blockchain/creating-your-first-blockchain-with-java-part-2-transactions-2cdac335e0ce">https://medium.com/programmers-blockchain/creating-your-first-blockchain-with-java-part-2-transactions-2cdac335e0ce</a>
  * <br/><a href="https://github.com/CryptoKass/NoobChain-Tutorial-Part-2">https://github.com/CryptoKass/NoobChain-Tutorial-Part-2</a>
- * @author Gabriel Chandesris (2021)
+ * @author Gabriel Chandesris (2021, 2024)
  */
 public class Wallet {
 
@@ -60,7 +60,7 @@ public class Wallet {
 			System.out.println( "StringUtils: InvalidAlgorithmParameterException: " + iape.getMessage() );
 		} 
 		
-		// NOTE : some more check about this if excpetion above ?!
+		// NOTE : some more check about this if exception above ?!
 //		if ( (this.privateKey == null) || (this.publicKey == null) ) {
 //			System.err.println( "ERROR ON KEYS !!" );
 //			System.exit(42);
@@ -69,9 +69,12 @@ public class Wallet {
 
 	/**
 	 * Returns balance and stores the UTXO's owned by this wallet in this.UTXOs
-	 * @return
+	 * @return float : balance)
 	 */
 	public float getBalance(final Map<String, TransactionOutput> mapUTXOs) {
+		
+		// TODO review this function ; bad implement ! (errors comes from here)
+		
 		float total = 0;	
 		for (Map.Entry<String, TransactionOutput> item : mapUTXOs.entrySet()) {
 			TransactionOutput to = item.getValue();
@@ -80,8 +83,10 @@ public class Wallet {
 				// Add it to our list of unspent transactions.
 				mapUTXOs.put(to.getId(), to);
 				total += to.getValue() ; 
+				System.out.println("Total: [" + total + "] (" + to.getValue() + ")");
 			}
-		}  
+		}
+		System.out.println("Total: [" + total + "]");
 		return total;
 	}
 
@@ -116,6 +121,38 @@ public class Wallet {
 		// 	{ mapUTXOs.remove(input.getTransactionOutputId()); }
 		
 		return newTransaction;
+	}
+	
+	/**
+	 * 
+	 * @param coinbase
+	 * @param mapUTXOs
+	 * @param startCoins
+	 * @return (genesis Transaction)
+	 */
+	public Transaction createGenesisTransactionBlock( Wallet coinbase, Map<String, TransactionOutput> mapUTXOs, float startCoins) {
+		// Create genesis transaction, which sends 'startCoins' NoobCoin to current wallet: 
+		Transaction genesisTransaction = new Transaction(coinbase.getPublicKey(), this.getPublicKey(), startCoins, null);
+		// Manually sign the genesis transaction
+		genesisTransaction.generateSignature(coinbase.getPrivateKey());
+		// Manually set the transaction id
+		genesisTransaction.setTransactionId( "0" );
+		// Manually add the Transactions Output
+		TransactionOutput trOut = new TransactionOutput(genesisTransaction.getRecipient(), 
+														genesisTransaction.getValue(), 
+														genesisTransaction.getTransactionId() );
+		genesisTransaction.getOutputs().add( trOut );
+		// Manually add the Transactions Input
+		TransactionInput trInp = new TransactionInput(trOut.getId());
+		trInp.setTransactionOutput( trOut );
+		genesisTransaction.getInputs().add( trInp );
+		
+		// Its important to store our first transaction in the UTXOs list.
+		TransactionOutput firstOuputTransaction = genesisTransaction.getOutputs().get(0);
+		mapUTXOs.put(firstOuputTransaction.getId(), firstOuputTransaction);
+
+		
+		return genesisTransaction;
 	}
 
 }

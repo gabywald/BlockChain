@@ -13,7 +13,7 @@ public class BlockChain {
 	
 	/**
 	 * Build a list of Blocks. 
-	 * @return
+	 * @return (List of Block)
 	 */
 	public static List<Block> build() {
 		return new ArrayList<Block>();

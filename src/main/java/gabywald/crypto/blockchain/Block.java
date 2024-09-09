@@ -13,7 +13,7 @@ import gabywald.global.json.JSONifiable;
  * Block of BlockChain. 
  * <br/><a href="https://medium.com/programmers-blockchain/create-simple-blockchain-java-tutorial-from-scratch-6eeed3cb03fa">https://medium.com/programmers-blockchain/create-simple-blockchain-java-tutorial-from-scratch-6eeed3cb03fa</a>
  * <br/><a href="https://github.com/CryptoKass/NoobChain-Tutorial-Part-1">https://github.com/CryptoKass/NoobChain-Tutorial-Part-1</a>
- * @author Gabriel Chandesris (2021)
+ * @author Gabriel Chandesris (2021, 2024)
  */
 public class Block extends JSONifiable {
 
@@ -98,8 +98,8 @@ public class Block extends JSONifiable {
 		if (transaction == null) { toReturn = false; }		
 		if ( (toReturn) && (this.previousHash != "0") ) {
 			if (transaction.processTransaction(UTXOs, minimumTransaction) != true) {
-				System.out.println("Transaction failed to process. Discarded.");
 				toReturn = false;
+				System.out.println("Transaction failed to process. Discarded.");
 			}
 		}
 		if (toReturn) {

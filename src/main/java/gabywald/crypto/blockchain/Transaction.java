@@ -19,7 +19,7 @@ import java.util.Base64;
  * Transaction of BlockChain.
  * <br/><a href="https://medium.com/programmers-blockchain/creating-your-first-blockchain-with-java-part-2-transactions-2cdac335e0ce">https://medium.com/programmers-blockchain/creating-your-first-blockchain-with-java-part-2-transactions-2cdac335e0ce</a>
  * <br/><a href="https://github.com/CryptoKass/NoobChain-Tutorial-Part-2">https://github.com/CryptoKass/NoobChain-Tutorial-Part-2</a>
- * @author Gabriel Chandesris (2021)
+ * @author Gabriel Chandesris (2021, 2024)
  */
 public class Transaction extends JSONifiable {
 	/** This is also the hash of the transaction. */
@@ -39,7 +39,7 @@ public class Transaction extends JSONifiable {
 	private static int sequence = 0;
 
 	// Constructor: 
-	public Transaction(PublicKey from, PublicKey to, float value,  List<TransactionInput> inputs) {
+	public Transaction(PublicKey from, PublicKey to, float value, List<TransactionInput> inputs) {
 		this.sender = from;
 		this.recipient = to;
 		this.value = value;
@@ -78,6 +78,7 @@ public class Transaction extends JSONifiable {
 			byte[] realSig = dsa.sign();
 			output = realSig;
 		} catch (Exception e) {
+			// TODO change Exception class / type here ! (i.e. not RuntimeException !)
 			throw new RuntimeException(e);
 		}
 		return output;
@@ -97,7 +98,8 @@ public class Transaction extends JSONifiable {
 			ecdsaVerify.initVerify(publicKey);
 			ecdsaVerify.update(data.getBytes());
 			return ecdsaVerify.verify(signature);
-		} catch(Exception e) {
+		} catch(Exception e) { 
+			// TODO change Exception class / type here ! (i.e. not RuntimeException !)
 			throw new RuntimeException(e);
 		}
 	}
@@ -171,9 +173,7 @@ public class Transaction extends JSONifiable {
 
 		// Add outputs to Unspent list
 		// this.outputs.stream().forEach(to -> mapUTXOs.put(to.id , to) );
-		for (TransactionOutput to : outputs) {
-			mapUTXOs.put(to.getId()  , to);
-		}
+		for (TransactionOutput to : outputs) { mapUTXOs.put(to.getId(), to); }
 
 		// Remove transaction inputs from UTXO lists as spent:
 		this.inputs.stream().forEach(ti -> {
