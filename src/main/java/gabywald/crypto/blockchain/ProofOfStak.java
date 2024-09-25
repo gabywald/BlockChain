@@ -28,6 +28,14 @@ public class ProofOfStak extends ProofAbstract {
 		
 		Random rand = new Random();
 		
+		
+		// TODO include here use of ProofOfStakContainer and ProofOfStakValidator
+		// TODO include wallet (PublicKey) in ProofOfStakValidator
+		// TODO include 'incoming transaction' of gain (minimal transaction ?!) for selected Validator
+		// TODO temporal release of Validator's Token (with 'incoming transaction'
+		// TODO graph recognition (instead of temporal) for automatic validation (number of blocks / transactions ?)
+		
+		
 		String hash = BlockChain.calculateHash(this.bloc.getHash(), this.bloc.getTimeStamp(), this.bloc.getMerkleRoot(), rand.nextInt());
 		
 		System.out.println("Block Computed !! : '" + hash + "'" ); // "' \n prev '" + this.bloc.getPreviousHash() + "'");
