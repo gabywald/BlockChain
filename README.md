@@ -21,6 +21,6 @@ Notes [20240908]
   - After how many validation stak is released ?
 
 Notes [20240925]
-  - Known bug "balance not valid as attempted", how to correctly check it anyway correctly ?! (need help)
+  - Known bug "balance not valid as attempted" not checked systematically, noted with " XXX BUG " in tests assertions removed, how to correctly check balance anyway correctly ?! (need help)
   - Check the blockchain as a graph for some behaviors (possible attacks, known or not)
   - Began implementation of proof of stak (PoS) and it's use (with validators and default)

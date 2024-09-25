@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 
 import gabywald.global.json.JSONException;
 import gabywald.global.json.JSONifiable;
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
 
 import java.util.Set;
 
@@ -24,7 +26,9 @@ public class TransactionOutputsContainer extends JSONifiable {
 
 	public void put(String id, TransactionOutput outputTransaction) {
 		if (outputTransaction == null) { return; }
-		this.datalog.add("PUT {" + outputTransaction.getValue() + "} (" + this.mapUTXOs.size() + ") [" + id + "]");
+		String log2add = "PUT {" + outputTransaction.getValue() + "} (" + this.mapUTXOs.size() + ") [" + id + "]";
+		this.datalog.add( log2add );
+		Logger.printlnLog(LoggerLevel.LL_DEBUG, log2add );
 		this.mapUTXOs.put(id, outputTransaction);
 	}
 	
@@ -36,7 +40,9 @@ public class TransactionOutputsContainer extends JSONifiable {
 	
 	public void remove(String transactionOutputId) {
 		if (this.mapUTXOs.containsKey(transactionOutputId)) {
-			this.datalog.add("REM {" + this.mapUTXOs.get(transactionOutputId).getValue() + "} (" + this.mapUTXOs.size() + ") [" + transactionOutputId + "]");
+			String log2add = "REM {" + this.mapUTXOs.get(transactionOutputId).getValue() + "} (" + this.mapUTXOs.size() + ") [" + transactionOutputId + "]";
+			this.datalog.add( log2add );
+			Logger.printlnLog(LoggerLevel.LL_DEBUG, log2add );
 			this.mapUTXOs.remove(transactionOutputId);
 		}
 	}
@@ -52,17 +58,19 @@ public class TransactionOutputsContainer extends JSONifiable {
 	 */
 	public float getBalance(final PublicKey publicKey) {
 		float total = 0;
-		System.out.print("(" + this.size() + ")");
+		StringBuilder sb2log = new StringBuilder();
+		sb2log.append("(" + this.size() + ")");
 		for (Map.Entry<String, TransactionOutput> item : this.entrySet()) {
 			TransactionOutput to = item.getValue();
 			if (to.isMine(publicKey)) {
 				// If output belongs to me ( if coins belong to this key )
 				// Add it to our list of unspent transactions.
 				total += to.getValue();
-				System.out.print("\t " + to.getValue());
+				sb2log.append("\t " + to.getValue());
 			}
 		}
-		System.out.println("\tTOTAL: " + total);
+		sb2log.append("\tTOTAL: " + total);
+		Logger.printlnLog(LoggerLevel.LL_WARNING, sb2log.toString());
 		return total;
 	}
 	
@@ -95,21 +103,19 @@ public class TransactionOutputsContainer extends JSONifiable {
 	public static boolean checkBalance(	final Wallet wallet, final float attemptedValue, 
 										final TransactionOutputsContainer mapUTXOs) {
 		float balanceWallet = wallet.getBalance( mapUTXOs );
-		System.out.println("Wallet's balance is: " + balanceWallet);
-		// Assertions.assertEquals(attemptedValue, balanceWallet);
+		Logger.printlnLog(LoggerLevel.LL_WARNING, "Wallet[" + wallet.getName() + "]'s balance is: " + balanceWallet + " ?= " + attemptedValue);
 		return (attemptedValue == balanceWallet);
 	}
 
 	public static boolean checkBalances(final Wallet walletA, final float attemptedValueA, 
 										final Wallet walletB, final float attemptedValueB, 
 										final TransactionOutputsContainer mapUTXOs) {
-		float balanceWalletA = walletA.getBalance( mapUTXOs );
-		float balanceWalletB = walletB.getBalance( mapUTXOs );
-		System.out.println("WalletA's balance is: " + balanceWalletA + " ? " + attemptedValueA);
-		System.out.println("WalletB's balance is: " + balanceWalletB + " ? " + attemptedValueB);
-		// Assertions.assertEquals(attemptedValueA, balanceWalletA);
-		// Assertions.assertEquals(attemptedValueB, balanceWalletB);
-		return (attemptedValueA == balanceWalletA && attemptedValueB == balanceWalletB);
+		boolean checkA = TransactionOutputsContainer.checkBalance(walletA, attemptedValueA, mapUTXOs);
+		boolean checkB = TransactionOutputsContainer.checkBalance(walletB, attemptedValueB, mapUTXOs);
+		return ( checkA // TransactionOutputsContainer.checkBalance(walletA, attemptedValueA, mapUTXOs)
+				 &&
+				 checkB // TransactionOutputsContainer.checkBalance(walletB, attemptedValueB, mapUTXOs)
+				);
 	}
 	
 }

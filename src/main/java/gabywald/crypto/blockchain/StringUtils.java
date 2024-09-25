@@ -11,6 +11,10 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.util.List;
+
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
+
 import java.util.ArrayList;
 import java.util.Base64;
 
@@ -39,7 +43,7 @@ public abstract class StringUtils {
 			}
 			return hexString.toString();
 		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-			System.out.println( "StringUtils: " + e.getClass().getName() + ": " + e.getMessage() );
+			Logger.printlnLog(LoggerLevel.LL_ERROR, " [Exception] StringUtils: " + e.getClass().getName() + ": " + e.getMessage() );
 			// throw new BlockchainException("StringUtils: " + e.getClass().getName() +": " + e.getMessage());
 			return null;
 		}
@@ -77,8 +81,10 @@ public abstract class StringUtils {
 			byte[] realSig = dsa.sign();
 			output = realSig;
 		} catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeyException  | SignatureException e) {
-			System.out.println( "StringUtils: " + e.getClass().getName() + ": " + e.getMessage() );
-			throw new BlockchainException("StringUtils: " + e.getClass().getName() + ": " + e.getMessage());
+			StringBuilder sb = new StringBuilder();
+			sb.append("StringUtils: ").append( e.getClass().getName() ).append(": ").append( e.getMessage() );
+			Logger.printlnLog(LoggerLevel.LL_ERROR, " [Exception] " + sb.toString());
+			throw new BlockchainException( sb.toString() );
 		}
 		return output;
 	}
@@ -98,8 +104,10 @@ public abstract class StringUtils {
 			ecdsaVerify.update(data.getBytes());
 			return ecdsaVerify.verify(signature);
 		} catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeyException  | SignatureException e) {
-			// throw new BlockchainException("StringUtils: " + e.getClass().getName() + ": " + e.getMessage());
-			System.out.println( "StringUtils: " + e.getClass().getName() + ": " + e.getMessage() );
+			StringBuilder sb = new StringBuilder();
+			sb.append("StringUtils: ").append( e.getClass().getName() ).append(": ").append( e.getMessage() );
+			Logger.printlnLog(LoggerLevel.LL_ERROR, " [Exception] " + sb.toString());
+			// throw new BlockchainException( sb.toString() );
 		}
 		return false; // if any Exception is throwed !
 	}

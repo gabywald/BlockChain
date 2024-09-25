@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
+
 /**
  * Tests about BlockChain / NoobChain. 
  * @author Gabriel Chandesris (2024)
@@ -25,6 +28,9 @@ class WalletTests {
 
 	@Test
 	void testWallet() {
+		
+		Logger.setLogLevel(LoggerLevel.LL_WARNING);
+		
 		Wallet wallet = new Wallet( "test" );
 		Assertions.assertNotNull(wallet);
 		Assertions.assertNotNull(StringUtils.getStringFromKey(wallet.getPrivateKey()));
@@ -33,6 +39,9 @@ class WalletTests {
 
 	@Test
 	void testCreateGenesisTransactionBlock() {
+		
+		Logger.setLogLevel(LoggerLevel.LL_WARNING);
+		
 		BlockChain blockchain = BlockChain.build();
 		TransactionOutputsContainer mapUTXOs = new TransactionOutputsContainer();
 		int difficulty = ProofBasic.BASIC_DIFFICULTY;
@@ -48,6 +57,8 @@ class WalletTests {
 	
 	@Test
 	void testSendFunds() {
+		
+		Logger.setLogLevel(LoggerLevel.LL_WARNING);
 		
 		BlockChain blockchain = BlockChain.build();
 		TransactionOutputsContainer mapUTXOs = new TransactionOutputsContainer();
@@ -89,7 +100,7 @@ class WalletTests {
 	
 	@Test
 	void testGetBalance() {
-		// fail("Not yet implemented");
+		// TODO fail("Not yet implemented");
 	}
 
 }

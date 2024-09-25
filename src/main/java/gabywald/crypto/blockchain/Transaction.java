@@ -10,6 +10,8 @@ import java.util.List;
 import gabywald.global.json.JSONException;
 import gabywald.global.json.JSONValue;
 import gabywald.global.json.JSONifiable;
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -93,8 +95,10 @@ public class Transaction extends JSONifiable {
 	 * @param data
 	 * @param signature
 	 * @return
+	 * @throws BlockchainException 
 	 */
-	public static boolean verifyECDSASig(PublicKey publicKey, String data, byte[] signature) {
+	public static boolean verifyECDSASig(PublicKey publicKey, String data, byte[] signature) 
+			throws BlockchainException {
 		try {
 			Signature ecdsaVerify = Signature.getInstance(StringUtils.ECDSA, StringUtils.BC);
 			// Signature.getInstance(StringUtils.CipherAlgorithm, StringUtils.CipherProvider);
@@ -102,8 +106,12 @@ public class Transaction extends JSONifiable {
 			ecdsaVerify.update(data.getBytes());
 			return ecdsaVerify.verify(signature);
 		} catch(Exception e) { 
-			// TODO change Exception class / type here ! (i.e. not RuntimeException !)
-			throw new RuntimeException(e);
+			// DONE change Exception class / type here ! (i.e. not RuntimeException !)
+			// throw new RuntimeException(e);
+			StringBuilder sb = new StringBuilder();
+			sb.append("Exception [").append( e.getClass().getName() )
+			  .append("]: {").append( e.getMessage() ).append("}");
+			throw new BlockchainException( sb.toString() );
 		}
 	}
 
@@ -123,7 +131,7 @@ public class Transaction extends JSONifiable {
 			this.signature = StringUtils.applyECDSASig(privateKey,data);
 		} catch (BlockchainException e) {
 			// e.printStackTrace();
-			System.out.println( e.getMessage() );
+			Logger.printlnLog(LoggerLevel.LL_ERROR, e.getMessage() );
 			this.signature = null;
 		}		
 	}
@@ -149,7 +157,7 @@ public class Transaction extends JSONifiable {
 										final float minimumTransaction) {
 
 		if (this.verifySignature() == false) {
-			System.out.println("#Transaction Signature failed to verify");
+			Logger.printlnLog(LoggerLevel.LL_ERROR, "#Transaction Signature failed to verify");
 			return false;
 		}
 
@@ -159,38 +167,40 @@ public class Transaction extends JSONifiable {
 
 		// Check if transaction is valid:
 		if (this.getInputsValue() < minimumTransaction) {
-			System.out.println("#Transaction Inputs to small: [" + this.getInputsValue() + "]");
+			Logger.printlnLog(LoggerLevel.LL_WARNING, "#Transaction Inputs too small: [" + this.getInputsValue() + "]");
 			return false;
 		}
 
 		// Generate transaction outputs:
 		float leftOver = this.getInputsValue() - this.value;
 		// - Get value of inputs then the left over change:
-		this.transactionId = this.calculateHash();
+		this.transactionId = this.calculateHash(); // XXX BUG <= same ID for the two (2) transactions could give error on removal !! ?? 
 		// - Send value to recipient
-		this.outputs.add(new TransactionOutput( this.recipient, this.value, this.transactionId));
+		this.outputs.add(new TransactionOutput( this.recipient, this.value, "r" + this.transactionId));
 		// - Send the left over 'change' back to sender
-		this.outputs.add(new TransactionOutput( this.sender, leftOver, this.transactionId));
+		this.outputs.add(new TransactionOutput( this.sender, leftOver, "s" + this.transactionId));
 		
-		System.out.println( "Inputs - value // " + this.getInputsValue() + " - " + this.value );
-		System.out.println( "\t Adding TO rcp // " + this.value );
-		System.out.println( "\t Adding TO snd // " + leftOver );
+		// TODO less log here 
+		Logger.printlnLog(LoggerLevel.LL_WARNING, "Inputs - value // " + this.getInputsValue() + " - " + this.value );
+		Logger.printlnLog(LoggerLevel.LL_WARNING, "\t Adding TO rcp // " + this.value );
+		Logger.printlnLog(LoggerLevel.LL_WARNING, "\t Adding TO snd // " + leftOver );
 
 		// Add outputs to Unspent list
 		for (TransactionOutput to : this.outputs) { mapUTXOs.put(to.getId(), to); }
 
 		// Remove transaction inputs from UTXO lists as spent:
 		this.inputs.stream().forEach(ti -> {
-			// TODO [bug?!] studies part for "bad removing" ??
-			System.out.println( "Removal... " );
+			// TODO XXX BUG [bug?!] studies part for "bad removing" ??
+			Logger.printlnLog(LoggerLevel.LL_WARNING, "Removal... " );
 			if ( ti.getTransactionOutput() != null) {
 				TransactionOutput to = mapUTXOs.getTransactionOutput(ti.getTransactionOutput().getId());
-				System.out.println( "\t Removing original TO // " + to.getValue() );
+				Logger.printlnLog(LoggerLevel.LL_WARNING, "\t Removing original TO // " + to.getValue() + " " + to.getId() );
+				mapUTXOs.remove(ti.getTransactionOutput().getId());
 			}
 			
 			// If Transaction can't be found skip it
-			if ( ti.getTransactionOutput() != null) 
-				{ mapUTXOs.remove(ti.getTransactionOutput().getId()); }
+//			if ( ti.getTransactionOutput() != null) 
+//				{ mapUTXOs.remove(ti.getTransactionOutput().getId()); }
 		} );
 
 		return true;

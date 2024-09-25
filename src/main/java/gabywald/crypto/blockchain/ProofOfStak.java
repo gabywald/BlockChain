@@ -2,6 +2,9 @@ package gabywald.crypto.blockchain;
 
 import java.util.Random;
 
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
+
 /**
  * 
  * TODO add stak interaction here !!
@@ -38,7 +41,7 @@ public class ProofOfStak extends ProofAbstract {
 		
 		String hash = BlockChain.calculateHash(this.bloc.getHash(), this.bloc.getTimeStamp(), this.bloc.getMerkleRoot(), rand.nextInt());
 		
-		System.out.println("Block Computed !! : '" + hash + "'" ); // "' \n prev '" + this.bloc.getPreviousHash() + "'");
+		Logger.printlnLog(LoggerLevel.LL_DEBUG, " [ProofOfStak] Block Computed !! : '" + hash + "'" ); // "' \n prev '" + this.bloc.getPreviousHash() + "'");
 		newBloc.setComputedHash(hash);
 		
 		return newBloc;

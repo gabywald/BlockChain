@@ -7,6 +7,8 @@ import java.util.List;
 import gabywald.global.json.JSONException;
 import gabywald.global.json.JSONValue;
 import gabywald.global.json.JSONifiable;
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
 
 /**
  * Block of BlockChain. 
@@ -35,7 +37,7 @@ public class Block extends JSONifiable {
 		this.timeStamp = new Date().getTime();
 		// Making sure we do this after we set the other values.
 		this.hash = this.calculateHash();
-		// *** System.out.println("calculateHash: {" + this.hash + "} <=" );
+		Logger.printlnLog(LoggerLevel.LL_DEBUG, "calculateHash: {" + this.hash + "} <=" );
 		this.computedHash = "";
 	}
 	
@@ -63,7 +65,7 @@ public class Block extends JSONifiable {
 
 	private String calculateHash() { 
 		String calculatedHash = BlockChain.calculateHash(this.previousHash, this.timeStamp, this.getMerkleRoot(), 0);
-		// *** System.out.println("calculateHash: {" + this.hash + "}\t{" + calculatedHash + "}" );
+		Logger.printlnLog(LoggerLevel.LL_DEBUG, "calculateHash: {" + this.hash + "}\t{" + calculatedHash + "}" );
 		return calculatedHash;
 	}
 	
@@ -90,20 +92,20 @@ public class Block extends JSONifiable {
 		// Process transaction and check if valid, unless block is genesis block then ignore.
 		if (transaction == null) { 
 			toReturn = false;
-			System.out.println("NO Transaction ! Discarded.");
+			Logger.printlnLog(LoggerLevel.LL_ERROR, "NO Transaction ! Discarded.");
 		}
 		if ( (toReturn) && (this.previousHash != Wallet.GENESIS_TRANSACTION_ID) ) {
 			// Real processing of Transaction  is here !
 			if ( ! transaction.processTransaction(UTXOs, minimumTransaction) ) {
 				toReturn = false;
-				System.out.println("Transaction failed to process. Discarded.");
+				Logger.printlnLog(LoggerLevel.LL_ERROR, "Transaction failed to process. Discarded.");
 			}
 		}
 		if (toReturn) {
 			this.transactions.add(transaction);
-			System.out.println("Transaction Successfully added to Block");
+			Logger.printlnLog(LoggerLevel.LL_FORUSER, "Transaction Successfully added to Block");
+			this.hash = this.calculateHash();
 		}
-		this.hash = this.calculateHash();
 		return toReturn;
 	}
 

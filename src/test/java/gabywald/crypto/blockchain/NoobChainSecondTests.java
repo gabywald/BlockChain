@@ -5,6 +5,9 @@ import java.security.Security;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
+
 /**
  * Tests about BlockChain / NoobChain. 
  * @author Gabriel Chandesris (2024)
@@ -13,6 +16,8 @@ class NoobChainSecondTests {
 	
 	@Test
 	void testPartPoWSample() {
+		
+		Logger.setLogLevel(LoggerLevel.LL_WARNING);
 		
 		BlockChain blockchain = BlockChain.build();
 		TransactionOutputsContainer mapUTXOs = new TransactionOutputsContainer();
@@ -50,6 +55,8 @@ class NoobChainSecondTests {
 	@Test
 	void testPartPoSsample() {
 		
+		Logger.setLogLevel(LoggerLevel.LL_WARNING);
+		
 		BlockChain blockchain = BlockChain.build();
 		TransactionOutputsContainer mapUTXOs = new TransactionOutputsContainer();
 		int difficulty = ProofOfStak.STAK_DIFFICULTY;
@@ -85,6 +92,8 @@ class NoobChainSecondTests {
 
 	@Test
 	void testPartPoSnext() {
+		
+		Logger.setLogLevel(LoggerLevel.LL_WARNING);
 		
 		// TODO add here a walletC to give stak for transferts between A and B !!
 		

@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
+
 /**
  * Wallet of BlockChain. 
  * @author Gabriel Chandesris (2021, 2024)
@@ -30,7 +33,8 @@ public class Wallet {
 		this.generateKeyPair(); 
 	}
 	
-	// public String getName()	{ return this.name; }
+	public String getName()	
+		{ return this.name; }
 	
 	public PrivateKey getPrivateKey() 
 		{ return this.privateKey; }
@@ -54,15 +58,9 @@ public class Wallet {
 			// Set the public and private keys from the keyPair
 			this.privateKey = keyPair.getPrivate();
 			this.publicKey = keyPair.getPublic();
-		} catch (NoSuchAlgorithmException nsae) {
+		} catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException | NoSuchProviderException e) {
 			// throw new BlockchainException("StringUtils: NoSuchAlgorithmException: " + nsae.getMessage());
-			System.out.println( "StringUtils: NoSuchAlgorithmException: " + nsae.getMessage() );
-		} catch (NoSuchProviderException nspe) {
-			// throw new BlockchainException("StringUtils: NoSuchProviderException: " + nspe.getMessage());
-			System.out.println( "StringUtils: NoSuchProviderException: " + nspe.getMessage() );
-		} catch (InvalidAlgorithmParameterException iape) {
-			// throw new BlockchainException("StringUtils: InvalidAlgorithmParameterException: " + iape.getMessage());
-			System.out.println( "StringUtils: InvalidAlgorithmParameterException: " + iape.getMessage() );
+			Logger.printlnLog(LoggerLevel.LL_ERROR, " [Exception]generateKeyPair: " + e.getClass().getName() + ": " + e.getMessage() );
 		} 
 		
 	}
@@ -84,7 +82,7 @@ public class Wallet {
 	public Transaction sendFunds(PublicKey recipient, float value, final TransactionOutputsContainer mapUTXOs) {
 		// Gather balance and check funds.
 		if (this.getBalance( mapUTXOs ) < value) {
-			System.out.println("#Not Enough funds to send transaction. Transaction Discarded.");
+			Logger.printlnLog(LoggerLevel.LL_ERROR, "#Not Enough funds to send transaction. Transaction Discarded.");
 			return null;
 		}
 		// Create array list of inputs
@@ -131,7 +129,7 @@ public class Wallet {
 		TransactionOutput firstOutputTransaction = genesisTransaction.getOutputs().get(0);
 		mapUTXOs.put(firstOutputTransaction.getId(), firstOutputTransaction);
 		
-		System.out.println("Creating and Mining Genesis block... {" + this.name + "}");
+		Logger.printlnLog(LoggerLevel.LL_FORUSER, "Creating and Mining Genesis block... {" + this.name + "}");
 		Block genesis = new Block( genesisTransaction.getTransactionId() ); // "0"
 		genesis.addTransaction(genesisTransaction, mapUTXOs, minimumTransaction);
 		// ***** BlockChain.addBlock(blockchain, new ProofBasic(genesis, difficulty) );
@@ -149,7 +147,7 @@ public class Wallet {
 								 final TransactionOutputsContainer mapUTXOs, 
 								 final Class<? extends ProofInterface> proof) {
 		Block nextBlock = new Block(currentBlock.getHash());
-		System.out.println("\n" 	+ this.name + ":" + this.publicKey 
+		Logger.printlnLog(LoggerLevel.LL_FORUSER, "\n" 	+ this.name + ":" + this.publicKey 
 									+ " is Attempting to send funds (" + amount + ") to \n" 
 									+ recipient.name + ":" + recipient.publicKey + "\n...");
 		Transaction transaction = this.sendFunds(recipient.getPublicKey(), amount, mapUTXOs);
@@ -160,8 +158,13 @@ public class Wallet {
 		try {
 			Constructor<?> cons = proof.getConstructor(Block.class, Integer.class);
 			BlockChain.addBlock(blockchain, (ProofInterface)cons.newInstance(blockchain.get(blockchain.size()-1), difficulty) );
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) 
-			{ e.printStackTrace(); }
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) { 
+			// e.printStackTrace();
+			StringBuilder sb = new StringBuilder();
+			sb.append("[Wallet]nextTransaction: ").append( e.getClass().getName() ).append(": ").append( e.getMessage() );
+			Logger.printlnLog(LoggerLevel.LL_ERROR, " **** [Exception] " + sb.toString() + " *****");
+			// throw new BlockchainException( sb.toString() );
+		}
 		
 		return nextBlock;
 	}

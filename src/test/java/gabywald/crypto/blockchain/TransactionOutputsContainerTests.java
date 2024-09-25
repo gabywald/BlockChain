@@ -8,10 +8,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
 
 /**
  * Tests about BlockChain / NoobChain. 
@@ -19,16 +20,11 @@ import org.junit.jupiter.api.Test;
  */
 class TransactionOutputsContainerTests {
 
-	@BeforeEach
-	void setUp() throws Exception {
-	}
-
-	@AfterEach
-	void tearDown() throws Exception {
-	}
-
 	@Test
 	void testGlobal() {
+		
+		Logger.setLogLevel(LoggerLevel.LL_WARNING);
+		
 		TransactionOutputsContainer toc = new TransactionOutputsContainer();
 		Assertions.assertNotNull( toc );
 		Assertions.assertNull( toc.getTransactionOutput( "key" ) );

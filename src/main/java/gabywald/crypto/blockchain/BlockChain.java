@@ -6,6 +6,8 @@ import java.util.Random;
 
 import gabywald.global.json.JSONException;
 import gabywald.global.json.JSONifiable;
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
 
 /**
  * 
@@ -62,14 +64,14 @@ public class BlockChain extends JSONifiable {
 			// Compare registered hash and calculated hash:
 			String calculatedHash = BlockChain.calculateHash(currentBlock.getPreviousHash(), currentBlock.getTimeStamp(), currentBlock.getMerkleRoot(), 0);
 			if ( ! currentBlock.getHash().equals(calculatedHash) ) {
-				System.out.println( currentBlock.getHash() + " / " + calculatedHash);
-				System.out.println("Current Hashes not equal");			
+				Logger.printlnLog(LoggerLevel.LL_ERROR,  currentBlock.getHash() + " / " + calculatedHash);
+				Logger.printlnLog(LoggerLevel.LL_ERROR, "Current Hashes not equal");			
 				return false;
 			}
 			// Compare previous hash and registered previous hash
 			if ( ! previousBlock.getHash().equals(currentBlock.getPreviousHash() ) ) {
-				System.out.println( previousBlock.getHash() + " ?? " + currentBlock.getPreviousHash() );
-				System.out.println("Previous Hashes not equal");
+				Logger.printlnLog(LoggerLevel.LL_ERROR,  previousBlock.getHash() + " ?? " + currentBlock.getPreviousHash() );
+				Logger.printlnLog(LoggerLevel.LL_ERROR, "Previous Hashes not equal");
 				return false;
 			}
 		}
@@ -105,19 +107,19 @@ public class BlockChain extends JSONifiable {
 			// Compare registered hash and calculated hash:
 			String calculatedHash = BlockChain.calculateHash(currentBlock.getPreviousHash(), currentBlock.getTimeStamp(), currentBlock.getMerkleRoot(), 0);
 			if ( ! currentBlock.getHash().equals(calculatedHash) ) {
-				System.out.println("#Current Hashes not equal {" + currentBlock.getHash() + "} != {" + calculatedHash + "}");
+				Logger.printlnLog(LoggerLevel.LL_ERROR, "#Current Hashes not equal {" + currentBlock.getHash() + "} != {" + calculatedHash + "}");
 				return false;
 			}
 			
 			// Compare previous hash and registered previous hash
 			if ( ! previousBlock.getHash().equals(currentBlock.getPreviousHash() ) ) {
-				System.out.println("#Previous Hashes not equal {" + previousBlock.getHash() + "} != {" + currentBlock.getPreviousHash() + "}");
+				Logger.printlnLog(LoggerLevel.LL_ERROR, "#Previous Hashes not equal {" + previousBlock.getHash() + "} != {" + currentBlock.getPreviousHash() + "}");
 				return false;
 			}
 			
 			// Check if hash is solved
 			if ( ! currentBlock.getComputedHash().substring(0, difficulty).equals(hashTarget)) {
-				System.out.println("#This block hasn't been mined");
+				Logger.printlnLog(LoggerLevel.LL_ERROR, "#This block hasn't been mined");
 				return false;
 			}
 
@@ -127,12 +129,12 @@ public class BlockChain extends JSONifiable {
 				Transaction currentTransaction = currentBlock.getTransactions().get(t);
 
 				if ( ! currentTransaction.verifySignature()) {
-					System.out.println("#Signature on Transaction(" + t + ") is Invalid");
+					Logger.printlnLog(LoggerLevel.LL_ERROR, "#Signature on Transaction(" + t + ") is Invalid");
 					return false; 
 				}
 				
 				if (currentTransaction.getInputsValue() != currentTransaction.getOutputsValue()) {
-					System.out.println("#Inputs are not equal to outputs on Transaction(" + t + ") {" + currentTransaction.getInputsValue() + "} != {" + currentTransaction.getOutputsValue() + "}");
+					Logger.printlnLog(LoggerLevel.LL_ERROR, "#Inputs are not equal to outputs on Transaction(" + t + ") {" + currentTransaction.getInputsValue() + "} != {" + currentTransaction.getOutputsValue() + "}");
 					return false; 
 				}
 
@@ -140,12 +142,12 @@ public class BlockChain extends JSONifiable {
 					tempOutput = tempUTXOs.getTransactionOutput(input.getTransactionOutputId() );
 
 					if (tempOutput == null) {
-						System.out.println("#Referenced input on Transaction(" + t + ") is Missing");
+						Logger.printlnLog(LoggerLevel.LL_ERROR, "#Referenced input on Transaction(" + t + ") is Missing");
 						return false;
 					}
 
 					if (input.getTransactionOutput().getValue() != tempOutput.getValue()) {
-						System.out.println("#Referenced input Transaction(" + t + ") value is Invalid");
+						Logger.printlnLog(LoggerLevel.LL_ERROR, "#Referenced input Transaction(" + t + ") value is Invalid");
 						return false;
 					}
 
@@ -156,19 +158,19 @@ public class BlockChain extends JSONifiable {
 					{ tempUTXOs.put(output.getId(), output); }
 
 				if (currentTransaction.getOutputs().get(0).getRecipient() != currentTransaction.getRecipient()) {
-					System.out.println("#Transaction(" + t + ") output recipient is not who it should be");
+					Logger.printlnLog(LoggerLevel.LL_ERROR, "#Transaction(" + t + ") output recipient is not who it should be");
 					return false;
 				}
 				
 				if (currentTransaction.getOutputs().get(0).getRecipient() == currentTransaction.getSender()) {
-					System.out.println("#Transaction(" + t + ") output 'change' is not sender.");
+					Logger.printlnLog(LoggerLevel.LL_ERROR, "#Transaction(" + t + ") output 'change' is not sender.");
 					return false;
 				}
 
 			}
 
 		}
-		System.out.println("Blockchain is valid");
+		Logger.printlnLog(LoggerLevel.LL_FORUSER, "Blockchain is valid");
 		return true;
 	}
 	

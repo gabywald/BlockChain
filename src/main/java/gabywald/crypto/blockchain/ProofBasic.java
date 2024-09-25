@@ -2,6 +2,9 @@ package gabywald.crypto.blockchain;
 
 import java.util.Random;
 
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
+
 /**
  * 
  * @author Gabriel Chandesris (2024). 
@@ -29,7 +32,7 @@ public class ProofBasic extends ProofAbstract {
 		
 		String hash = BlockChain.calculateHash(this.bloc.getHash(), this.bloc.getTimeStamp(), this.bloc.getMerkleRoot(), rand.nextInt());
 		
-		System.out.println("Block Computed !! : '" + hash + "'" );
+		Logger.printlnLog(LoggerLevel.LL_DEBUG, " [ProofBasic] Block Computed !! : '" + hash + "'" );
 		newBloc.setComputedHash(hash);
 		
 		return newBloc;

@@ -5,6 +5,9 @@ import java.security.Security;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
+
 /**
  * Tests about BlockChain / NoobChain. 
  * @author Gabriel Chandesris (2024)
@@ -13,6 +16,8 @@ class NoobChainSimplePOS02Tests {
 	
 	@Test
 	void testPartPoSnext() {
+		
+		Logger.setLogLevel(LoggerLevel.LL_WARNING);
 		
 		// TODO add here a walletC to give stak for transferts between A and B !!
 		
@@ -45,35 +50,35 @@ class NoobChainSimplePOS02Tests {
 											   blockchain, difficulty, mapUTXOs, iProofClass);
 		Assertions.assertNotNull( block1 );
 		Assertions.assertTrue( BlockChain.isChainValidV2( blockchain, genesisTransaction, difficulty ) );
-		// XXX Assertions.assertTrue( TransactionOutputsContainer.checkBalances(walletA, 60f, walletB, 40f, mapUTXOs) );
+		Assertions.assertTrue( TransactionOutputsContainer.checkBalances(walletA, 60f, walletB, 40f, mapUTXOs) );
 
 		// Testing: A send 1000 to B (not working !)
 		Block block2 = walletA.nextTransaction(1000f, minimumTransaction, block1, walletB, 
 											   blockchain, difficulty, mapUTXOs, iProofClass);
 		Assertions.assertNotNull( block2 );
 		Assertions.assertTrue( BlockChain.isChainValidV2( blockchain, genesisTransaction, difficulty ) );
-		// XXX Assertions.assertTrue( TransactionOutputsContainer.checkBalances(walletA, 60f, walletB, 40f, mapUTXOs) );
+		Assertions.assertTrue( TransactionOutputsContainer.checkBalances(walletA, 60f, walletB, 40f, mapUTXOs) );
 
 		// Testing: B send 20 to A
 		Block block3 = walletB.nextTransaction(20f, minimumTransaction, block2, walletA, 
 											   blockchain, difficulty, mapUTXOs, iProofClass);
 		Assertions.assertNotNull( block3 );
 		Assertions.assertTrue( BlockChain.isChainValidV2( blockchain, genesisTransaction, difficulty ) );
-		// XXX ssertions.assertTrue( TransactionOutputsContainer.checkBalances(walletA, 80f, walletB, 20f, mapUTXOs) );
+		// XXX BUG Assertions.assertTrue( TransactionOutputsContainer.checkBalances(walletA, 80f, walletB, 20f, mapUTXOs) );
 		
 		// Testing: A send 10 to B
 		Block block4 = walletA.nextTransaction(10f, minimumTransaction, block3, walletB, 
 											   blockchain, difficulty, mapUTXOs, iProofClass);
 		Assertions.assertNotNull( block4 );
 		Assertions.assertTrue( BlockChain.isChainValidV2( blockchain, genesisTransaction, difficulty ) );
-		// XXX Assertions.assertTrue( TransactionOutputsContainer.checkBalances(walletA, 70f, walletB, 30f, mapUTXOs) );
+		// XXX BUG Assertions.assertTrue( TransactionOutputsContainer.checkBalances(walletA, 70f, walletB, 30f, mapUTXOs) );
 		
 		// Testing: B send 5 to A
 		Block block5 = walletB.nextTransaction( 5f, minimumTransaction, block4, walletA, 
 											   blockchain, difficulty, mapUTXOs, iProofClass);
 		Assertions.assertNotNull( block5 );
 		Assertions.assertTrue( BlockChain.isChainValidV2( blockchain, genesisTransaction, difficulty ) );
-		// XXX Assertions.assertTrue( TransactionOutputsContainer.checkBalances(walletA, 75f, walletB, 25f, mapUTXOs) );
+		// XXX BUG Assertions.assertTrue( TransactionOutputsContainer.checkBalances(walletA, 75f, walletB, 25f, mapUTXOs) );
 	}
 	
 }

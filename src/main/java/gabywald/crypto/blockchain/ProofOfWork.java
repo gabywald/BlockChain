@@ -1,5 +1,8 @@
 package gabywald.crypto.blockchain;
 
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
+
 /**
  * 
  * @author Gabriel Chandesris (2023, 2024). 
@@ -24,7 +27,7 @@ public class ProofOfWork extends ProofAbstract {
 		
 		String hash = BlockChain.computeValidHash(this.bloc.getHash(), this.bloc.getTimeStamp(), this.bloc.getMerkleRoot(), difficulty);
 		
-		System.out.println("Block Mined!!! : '" + hash + "'" ); // "' \n prev '" + this.bloc.getPreviousHash() + "'");
+		Logger.printlnLog(LoggerLevel.LL_DEBUG, " [ProofOfWork] Block Mined!!! : '" + hash + "'" ); // "' \n prev '" + this.bloc.getPreviousHash() + "'");
 		newBloc.setComputedHash(hash);
 		
 		return newBloc;

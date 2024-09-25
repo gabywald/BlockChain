@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
+
 class ProofOfStakContainerTests {
 
 	@BeforeEach
@@ -18,6 +21,9 @@ class ProofOfStakContainerTests {
 
 	@Test
 	void testSelectValidator() {
+		
+		Logger.setLogLevel(LoggerLevel.LL_WARNING);
+		
 		ProofOfStakContainer posc = ProofOfStakContainer.getInstance();
 		
 		Assertions.assertNull( posc.selectValidator() );
