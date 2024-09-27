@@ -132,7 +132,6 @@ public class Wallet {
 		Logger.printlnLog(LoggerLevel.LL_FORUSER, "Creating and Mining Genesis block... {" + this.name + "}");
 		Block genesis = new Block( genesisTransaction.getTransactionId() ); // "0"
 		genesis.addTransaction(genesisTransaction, mapUTXOs, minimumTransaction);
-		// ***** BlockChain.addBlock(blockchain, new ProofBasic(genesis, difficulty) );
 		try {
 			Constructor<?> cons = proof.getConstructor(Block.class, Integer.class);
 			BlockChain.addBlock(blockchain, (ProofInterface)cons.newInstance(genesis, difficulty) );

@@ -1,5 +1,6 @@
 package gabywald.crypto.blockchain;
 
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -47,6 +48,45 @@ public class BlockChain extends JSONifiable {
 	 * @return (List of Block)
 	 */
 	public static BlockChain build() { return new BlockChain(); }
+	
+	/**
+	 * Get Last Block Where PublicKey occur as Sender or Recipîent
+	 * @param blockchain
+	 * @param pk
+	 * @param isSender True for Sender, False for Recipîent. 
+	 * @return The Last Block. 
+	 */
+	public static Block getLastBlock(final BlockChain blockchain, final PublicKey pk, boolean isSender) {
+		Block toReturn = null;
+		for (Block current : blockchain.internalBlocks) {
+			for (Transaction tr : current.getTransactions()) {
+				if (isSender) {
+					if (pk.equals( tr.getSender() ) ) 
+						{ toReturn = current; }
+				} else { 
+					if (pk.equals( tr.getRecipient() ) ) 
+						{ toReturn = current; }
+				}
+			}
+		}
+		return toReturn;
+	}
+	
+	public static List<Block> getAllBlocks(final BlockChain blockchain, final PublicKey pk, boolean isSender) {
+		List<Block> toReturn = new ArrayList<Block>();
+		for (Block current : blockchain.internalBlocks) {
+			for (Transaction tr : current.getTransactions()) {
+				if (isSender) {
+					if (pk.equals( tr.getSender() ) ) 
+						{ toReturn.add(current); }
+				} else { 
+					if (pk.equals( tr.getRecipient() ) ) 
+						{ toReturn.add(current); }
+				}
+			}
+		}
+		return toReturn; // TODO return as immutable ??
+	}
 	
 	/**
 	 * 

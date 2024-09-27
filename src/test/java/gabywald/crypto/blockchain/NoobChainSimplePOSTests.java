@@ -9,17 +9,15 @@ import gabywald.utilities.logger.Logger;
 import gabywald.utilities.logger.Logger.LoggerLevel;
 
 /**
- * Tests about BlockChain / NoobChain. 
+ * Tests about BlockChain / NoobChain : Proof of Stak. 
  * @author Gabriel Chandesris (2024)
  */
-class NoobChainSimplePOS02Tests {
+class NoobChainSimplePOS01Tests {
 	
 	@Test
-	void testPartPoSnext() {
+	void testPartPoSsimple() {
 		
 		Logger.setLogLevel(LoggerLevel.LL_WARNING);
-		
-		// TODO add here a walletC to give stak for transferts between A and B !!
 		
 		BlockChain blockchain = BlockChain.build();
 		TransactionOutputsContainer mapUTXOs = new TransactionOutputsContainer();
@@ -80,5 +78,5 @@ class NoobChainSimplePOS02Tests {
 		Assertions.assertTrue( BlockChain.isChainValidV2( blockchain, genesisTransaction, difficulty ) );
 		// XXX BUG Assertions.assertTrue( TransactionOutputsContainer.checkBalances(walletA, 75f, walletB, 25f, mapUTXOs) );
 	}
-	
+
 }

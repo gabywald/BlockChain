@@ -6,7 +6,7 @@ import gabywald.utilities.logger.Logger;
 import gabywald.utilities.logger.Logger.LoggerLevel;
 
 /**
- * 
+ * Simple Proof (no Work, no Stak)
  * @author Gabriel Chandesris (2024). 
  */
 public class ProofBasic extends ProofAbstract {

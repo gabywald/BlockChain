@@ -2,6 +2,7 @@ package gabywald.crypto.blockchain;
 
 import java.util.List;
 import java.util.Random;
+import java.security.PublicKey;
 import java.util.ArrayList;
 
 
@@ -27,9 +28,9 @@ public class ProofOfStakContainer {
 	/** Set Of possible validators. */
 	private List<ProofOfStakValidator> validators = new ArrayList<ProofOfStakValidator>();
 	
-	public boolean addValidator(final float value, final float time) {
+	public boolean addValidator(final float value, final float time, final PublicKey staker) {
 		boolean isBuild = true;
-		try { validators.add( ProofOfStakValidator.buildProofOfStakValidator(value, time) ); } 
+		try { validators.add( ProofOfStakValidator.buildProofOfStakValidator(value, time, staker) ); } 
 		catch (BlockchainException e) {
 			// e.printStackTrace();
 			// log error here !!
@@ -42,7 +43,7 @@ public class ProofOfStakContainer {
 	
 	public ProofOfStakValidator selectValidator() {
 		
-		// TODO case when 'validators' is empty ?! (select a default one or insert regularly one)
+		// TODO case when 'validators' is empty ?! (select a default one or insert regularly one ??)
 		if (this.validators.size() == 0) { return null; }
 		
 		float totalStakWithTime = 0;
@@ -64,4 +65,6 @@ public class ProofOfStakContainer {
 		}
 		return null; // TODO avoid this ?!
 	}
+
+	public void clear() { this.validators.clear(); }
 }

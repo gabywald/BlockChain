@@ -29,16 +29,20 @@ public class ProofOfStak extends ProofAbstract {
 		Block newBloc = new Block(this.bloc.getHash());
 		newBloc.setTransactions(this.bloc.getTransactions());
 		
-		Random rand = new Random();
-		
-		
 		// TODO include here use of ProofOfStakContainer and ProofOfStakValidator
+//		ProofOfStakValidator posV = ProofOfStakContainer.getInstance().selectValidator();
+//		if (posV == null) {
+//			Logger.printlnLog(LoggerLevel.LL_ERROR, " [ProofOfStak] No Validator !!" );
+//			return newBloc;
+//		}
 		// TODO include wallet (PublicKey) in ProofOfStakValidator
+		// TODO removal Transaction when in StakValidator (temporary Wallet, or not !?)
+		// TODO restitution Transaction when time is passed
 		// TODO include 'incoming transaction' of gain (minimal transaction ?!) for selected Validator
 		// TODO temporal release of Validator's Token (with 'incoming transaction'
 		// TODO graph recognition (instead of temporal) for automatic validation (number of blocks / transactions ?)
 		
-		
+		Random rand = new Random();
 		String hash = BlockChain.calculateHash(this.bloc.getHash(), this.bloc.getTimeStamp(), this.bloc.getMerkleRoot(), rand.nextInt());
 		
 		Logger.printlnLog(LoggerLevel.LL_DEBUG, " [ProofOfStak] Block Computed !! : '" + hash + "'" ); // "' \n prev '" + this.bloc.getPreviousHash() + "'");

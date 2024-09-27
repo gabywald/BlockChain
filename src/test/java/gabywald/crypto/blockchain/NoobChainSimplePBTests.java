@@ -9,21 +9,23 @@ import gabywald.utilities.logger.Logger;
 import gabywald.utilities.logger.Logger.LoggerLevel;
 
 /**
- * Tests about BlockChain / NoobChain. 
+ * Tests about BlockChain / NoobChain : Proof Basic. 
  * @author Gabriel Chandesris (2024)
  */
-class NoobChainSimplePOS01Tests {
+class NoobChainSimplePBTests {
 	
 	@Test
-	void testPartPoSsimple() {
+	void testPartPBnext() {
 		
 		Logger.setLogLevel(LoggerLevel.LL_WARNING);
+		
+		// TODO add here a walletC to give stak for transferts between A and B !!
 		
 		BlockChain blockchain = BlockChain.build();
 		TransactionOutputsContainer mapUTXOs = new TransactionOutputsContainer();
 		int difficulty = ProofOfStak.STAK_DIFFICULTY;
 		float minimumTransaction = 0.1f;
-		Class<? extends ProofInterface> iProofClass = ProofOfStak.class;
+		Class<? extends ProofInterface> iProofClass = ProofBasic.class;
 		
 		// Setup Bouncy castle as a Security Provider
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
@@ -78,5 +80,5 @@ class NoobChainSimplePOS01Tests {
 		Assertions.assertTrue( BlockChain.isChainValidV2( blockchain, genesisTransaction, difficulty ) );
 		// XXX BUG Assertions.assertTrue( TransactionOutputsContainer.checkBalances(walletA, 75f, walletB, 25f, mapUTXOs) );
 	}
-
+	
 }
