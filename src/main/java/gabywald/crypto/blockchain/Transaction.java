@@ -6,20 +6,19 @@ import java.security.PublicKey;
 import java.security.Signature;
 
 import java.util.List;
-import java.util.Map;
 
 import gabywald.global.json.JSONException;
 import gabywald.global.json.JSONValue;
 import gabywald.global.json.JSONifiable;
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
 
 import java.util.ArrayList;
 import java.util.Base64;
 
 /**
  * Transaction of BlockChain.
- * <br/><a href="https://medium.com/programmers-blockchain/creating-your-first-blockchain-with-java-part-2-transactions-2cdac335e0ce">https://medium.com/programmers-blockchain/creating-your-first-blockchain-with-java-part-2-transactions-2cdac335e0ce</a>
- * <br/><a href="https://github.com/CryptoKass/NoobChain-Tutorial-Part-2">https://github.com/CryptoKass/NoobChain-Tutorial-Part-2</a>
- * @author Gabriel Chandesris (2021)
+ * @author Gabriel Chandesris (2021, 2024)
  */
 public class Transaction extends JSONifiable {
 	/** This is also the hash of the transaction. */
@@ -38,12 +37,18 @@ public class Transaction extends JSONifiable {
 	/** A rough count of how many transactions have been generated. */
 	private static int sequence = 0;
 
-	// Constructor: 
-	public Transaction(PublicKey from, PublicKey to, float value,  List<TransactionInput> inputs) {
+	/**
+	 * Constructor. 
+	 * @param from
+	 * @param to
+	 * @param value
+	 * @param inputs
+	 */
+	public Transaction(PublicKey from, PublicKey to, float value, List<TransactionInput> inputs) {
 		this.sender = from;
 		this.recipient = to;
 		this.value = value;
-		this.inputs = inputs;
+		this.inputs = (inputs != null)?inputs:this.inputs;
 	}
 
 	/** 
@@ -78,6 +83,7 @@ public class Transaction extends JSONifiable {
 			byte[] realSig = dsa.sign();
 			output = realSig;
 		} catch (Exception e) {
+			// TODO change Exception class / type here ! (i.e. not RuntimeException !)
 			throw new RuntimeException(e);
 		}
 		return output;
@@ -89,16 +95,23 @@ public class Transaction extends JSONifiable {
 	 * @param data
 	 * @param signature
 	 * @return
+	 * @throws BlockchainException 
 	 */
-	public static boolean verifyECDSASig(PublicKey publicKey, String data, byte[] signature) {
+	public static boolean verifyECDSASig(PublicKey publicKey, String data, byte[] signature) 
+			throws BlockchainException {
 		try {
 			Signature ecdsaVerify = Signature.getInstance(StringUtils.ECDSA, StringUtils.BC);
 			// Signature.getInstance(StringUtils.CipherAlgorithm, StringUtils.CipherProvider);
 			ecdsaVerify.initVerify(publicKey);
 			ecdsaVerify.update(data.getBytes());
 			return ecdsaVerify.verify(signature);
-		} catch(Exception e) {
-			throw new RuntimeException(e);
+		} catch(Exception e) { 
+			// DONE change Exception class / type here ! (i.e. not RuntimeException !)
+			// throw new RuntimeException(e);
+			StringBuilder sb = new StringBuilder();
+			sb.append("Exception [").append( e.getClass().getName() )
+			  .append("]: {").append( e.getMessage() ).append("}");
+			throw new BlockchainException( sb.toString() );
 		}
 	}
 
@@ -118,7 +131,7 @@ public class Transaction extends JSONifiable {
 			this.signature = StringUtils.applyECDSASig(privateKey,data);
 		} catch (BlockchainException e) {
 			// e.printStackTrace();
-			System.out.println( e.getMessage() );
+			Logger.printlnLog(LoggerLevel.LL_ERROR, e.getMessage() );
 			this.signature = null;
 		}		
 	}
@@ -140,74 +153,81 @@ public class Transaction extends JSONifiable {
 	 * @param minimumTransaction
 	 * @return
 	 */
-	public boolean processTransaction(	final Map<String, TransactionOutput> mapUTXOs, 
+	public boolean processTransaction(	final TransactionOutputsContainer mapUTXOs, 
 										final float minimumTransaction) {
 
 		if (this.verifySignature() == false) {
-			System.out.println("#Transaction Signature failed to verify");
+			Logger.printlnLog(LoggerLevel.LL_ERROR, "#Transaction Signature failed to verify");
 			return false;
 		}
 
 		// Gather transaction inputs (Make sure they are unspent):
-		// this.inputs.stream().forEach(ti -> ti.UTXO = UTXOs.get(ti.transactionOutputId) );
-		for (TransactionInput it : inputs) {
-			it.setTransactionOutput( mapUTXOs.get(it.getTransactionOutputId() ) );
-		}
+		for (TransactionInput ti : this.inputs)
+			{ ti.setTransactionOutput( mapUTXOs.getTransactionOutput( ti.getTransactionOutputId() ) ); }
 
 		// Check if transaction is valid:
 		if (this.getInputsValue() < minimumTransaction) {
-			System.out.println("#Transaction Inputs to small: " + this.getInputsValue());
+			Logger.printlnLog(LoggerLevel.LL_WARNING, "#Transaction Inputs too small: [" + this.getInputsValue() + "]");
 			return false;
 		}
 
 		// Generate transaction outputs:
-		float leftOver = this.getInputsValue() - value; // 
+		float leftOver = this.getInputsValue() - this.value;
 		// - Get value of inputs then the left over change:
-		this.transactionId = this.calculateHash();
+		this.transactionId = this.calculateHash(); // XXX BUG <= same ID for the two (2) transactions could give error on removal !! ?? 
 		// - Send value to recipient
-		this.outputs.add(new TransactionOutput( this.recipient, this.value, this.transactionId));
+		this.outputs.add(new TransactionOutput( this.recipient, this.value, "r" + this.transactionId));
 		// - Send the left over 'change' back to sender
-		this.outputs.add(new TransactionOutput( this.sender, leftOver, this.transactionId));	
+		this.outputs.add(new TransactionOutput( this.sender, leftOver, "s" + this.transactionId));
+		
+		// TODO less log here 
+		Logger.printlnLog(LoggerLevel.LL_WARNING, "Inputs - value // " + this.getInputsValue() + " - " + this.value );
+		Logger.printlnLog(LoggerLevel.LL_WARNING, "\t Adding TO rcp // " + this.value );
+		Logger.printlnLog(LoggerLevel.LL_WARNING, "\t Adding TO snd // " + leftOver );
 
 		// Add outputs to Unspent list
-		// this.outputs.stream().forEach(to -> mapUTXOs.put(to.id , to) );
-		for (TransactionOutput to : outputs) {
-			mapUTXOs.put(to.getId()  , to);
-		}
+		for (TransactionOutput to : this.outputs) { mapUTXOs.put(to.getId(), to); }
 
 		// Remove transaction inputs from UTXO lists as spent:
 		this.inputs.stream().forEach(ti -> {
+			// TODO XXX BUG [bug?!] studies part for "bad removing" ??
+			Logger.printlnLog(LoggerLevel.LL_WARNING, "Removal... " );
+			if ( ti.getTransactionOutput() != null) {
+				TransactionOutput to = mapUTXOs.getTransactionOutput(ti.getTransactionOutput().getId());
+				Logger.printlnLog(LoggerLevel.LL_WARNING, "\t Removing original TO // " + to.getValue() + " " + to.getId() );
+				mapUTXOs.remove(ti.getTransactionOutput().getId());
+			}
+			
 			// If Transaction can't be found skip it
-			if ( ti.getTransactionOutput() != null) 
-				{ mapUTXOs.remove(ti.getTransactionOutput().getId()); }
+//			if ( ti.getTransactionOutput() != null) 
+//				{ mapUTXOs.remove(ti.getTransactionOutput().getId()); }
 		} );
 
 		return true;
 	}
 
 	/**
-	 * Returns sum of inputs(UTXOs) values. 
-	 * @return
+	 * Returns sum of inputs values.
+	 * @return Total of Inputs' values.
 	 */
 	public float getInputsValue() {
 		float total = 0;
 		for (TransactionInput ti : inputs) {
 			// If Transaction can't be found skip it
-			if ( ti.getTransactionOutput() == null)  { continue; } 
-			total += ti.getTransactionOutput().getValue();
+			if ( ti.getTransactionOutput() != null)
+				{ total += ti.getTransactionOutput().getValue(); }
 		}
 		return total;
 	}
 
 	/**
-	 * Returns sum of outputs:
-	 * @return
+	 * Returns sum of outputs values.
+	 * @return Total of Outputs' values. 
 	 */
 	public float getOutputsValue() {
 		float total = 0;
-		for (TransactionOutput to : outputs) {
-			total += to.getValue();
-		}
+		for (TransactionOutput to : outputs)
+			{ total += to.getValue(); }
 		return total;
 	}
 
@@ -225,12 +245,12 @@ public class Transaction extends JSONifiable {
 
 	public float getValue() 
 		{ return this.value; }
+	
+	public List<TransactionInput> getInputs() 
+		{ return this.inputs; }
 
 	public List<TransactionOutput> getOutputs() 
 		{ return this.outputs; }
-
-	public List<TransactionInput> getInputs() 
-		{ return this.inputs; }
 
 	@Override
 	protected void setKeyValues() {
@@ -238,8 +258,6 @@ public class Transaction extends JSONifiable {
 		this.put("sender", JSONValue.instanciate( this.sender.toString() ) );
 		this.put("recipient", JSONValue.instanciate( this.recipient.toString() ) );
 		this.put("value", JSONValue.instanciate( this.value ) );
-		// this.put("signature", JSONValue.instanciate( this.signature ) );
-		// this.put("sequence", JSONValue.instanciate( this.sequence ) );
 	}
 
 	@Override

@@ -11,16 +11,16 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.util.List;
+
+import gabywald.utilities.logger.Logger;
+import gabywald.utilities.logger.Logger.LoggerLevel;
+
 import java.util.ArrayList;
 import java.util.Base64;
 
 /**
  * StringUtil of BlockChain. 
- * <br/><a href="https://medium.com/programmers-blockchain/create-simple-blockchain-java-tutorial-from-scratch-6eeed3cb03fa">https://medium.com/programmers-blockchain/create-simple-blockchain-java-tutorial-from-scratch-6eeed3cb03fa</a>
- * <br/><a href="https://github.com/CryptoKass/NoobChain-Tutorial-Part-1">https://github.com/CryptoKass/NoobChain-Tutorial-Part-1</a>
- * <br/><a href="https://medium.com/programmers-blockchain/creating-your-first-blockchain-with-java-part-2-transactions-2cdac335e0ce">https://medium.com/programmers-blockchain/creating-your-first-blockchain-with-java-part-2-transactions-2cdac335e0ce</a>
- * <br/><a href="https://github.com/CryptoKass/NoobChain-Tutorial-Part-2">https://github.com/CryptoKass/NoobChain-Tutorial-Part-2</a>
- * @author Gabriel Chandesris (2021)
+ * @author Gabriel Chandesris (2021, 2024)
  */
 public abstract class StringUtils {
 
@@ -38,14 +38,12 @@ public abstract class StringUtils {
 			StringBuffer hexString = new StringBuffer();
 			for (int i = 0 ; i < hash.length ; i++) {
 				String hex = Integer.toHexString(0xff & hash[i]);
-				if (hex.length() == 1) {
-					hexString.append('0');
-				}
+				if (hex.length() == 1) { hexString.append('0'); }
 				hexString.append(hex);
 			}
 			return hexString.toString();
 		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-			System.out.println( "StringUtils: " + e.getClass().getName() + ": " + e.getMessage() );
+			Logger.printlnLog(LoggerLevel.LL_ERROR, " [Exception] StringUtils: " + e.getClass().getName() + ": " + e.getMessage() );
 			// throw new BlockchainException("StringUtils: " + e.getClass().getName() +": " + e.getMessage());
 			return null;
 		}
@@ -83,8 +81,10 @@ public abstract class StringUtils {
 			byte[] realSig = dsa.sign();
 			output = realSig;
 		} catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeyException  | SignatureException e) {
-			System.out.println( "StringUtils: " + e.getClass().getName() + ": " + e.getMessage() );
-			throw new BlockchainException("StringUtils: " + e.getClass().getName() + ": " + e.getMessage());
+			StringBuilder sb = new StringBuilder();
+			sb.append("StringUtils: ").append( e.getClass().getName() ).append(": ").append( e.getMessage() );
+			Logger.printlnLog(LoggerLevel.LL_ERROR, " [Exception] " + sb.toString());
+			throw new BlockchainException( sb.toString() );
 		}
 		return output;
 	}
@@ -104,8 +104,10 @@ public abstract class StringUtils {
 			ecdsaVerify.update(data.getBytes());
 			return ecdsaVerify.verify(signature);
 		} catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeyException  | SignatureException e) {
-			// throw new BlockchainException("StringUtils: " + e.getClass().getName() + ": " + e.getMessage());
-			System.out.println( "StringUtils: " + e.getClass().getName() + ": " + e.getMessage() );
+			StringBuilder sb = new StringBuilder();
+			sb.append("StringUtils: ").append( e.getClass().getName() ).append(": ").append( e.getMessage() );
+			Logger.printlnLog(LoggerLevel.LL_ERROR, " [Exception] " + sb.toString());
+			// throw new BlockchainException( sb.toString() );
 		}
 		return false; // if any Exception is throwed !
 	}
@@ -131,9 +133,8 @@ public abstract class StringUtils {
 	public static String getMerkleRoot(List<Transaction> transactions) {
 		int count = transactions.size();
 		List<String> previousTreeLayer = new ArrayList<String>();
-		for (Transaction transaction : transactions) {
-			previousTreeLayer.add(transaction.getTransactionId());
-		}
+		for (Transaction transaction : transactions) 
+			{ previousTreeLayer.add(transaction.getTransactionId()); }
 		List<String> treeLayer = previousTreeLayer;
 		while (count > 1) {
 			treeLayer = new ArrayList<String>();

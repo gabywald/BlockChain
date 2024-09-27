@@ -2,3 +2,21 @@
 #medium #blockchain "Creating Your First Blockchain with Java. Part 1." #programmers #java #ProofOfWork ... https://medium.com/programmers-blockchain/create-simple-blockchain-java-tutorial-from-scratch-6eeed3cb03fa
 #medium #blockchain "Creating Your First Blockchain with Java. Part 2." #programmers #java #transactions ... https://medium.com/programmers-blockchain/creating-your-first-blockchain-with-java-part-2-transactions-2cdac335e0ce
 #medium #blockchain "Blockchain Development — Zero to Hero [Guide]" #programmers #development #guide ... https://medium.com/programmers-blockchain/blockchain-development-mega-guide-5a316e6d10df
+
+https://www.javatpoint.com/blockchain-java
+https://www.baeldung.com/java-blockchain
+
+Notes Pour PoS
+	issu de MISC 128 Juillet / Août 2023 (ISSN 1631-9036 ) : article p. 64-72 "Blochain ; De la Preuve de Travail à la preuve d'enjeu"
+	BlockChain en général : succession de Block de validation, embranchments valides sur commun accord (en général branche la plus longue)
+	Validation des block par pluseurs méthodes : PoW, PoS, autres(?)
+	Attaques possibles (de base) : 
+		Majorité (si plus d'un certain pourcentage / proportion du réseau de calcul)
+	Preuve de Travail (Proof of Work / PoW) : Minage, puissance de calcul (avantage et inconvénient)
+	Preuve d'Enjeu (Proof of Stak / PoS) : consensus, mise en jeu de jetons, forge au lieu de minage, pseudo-aléatoire (limiter le monopole, concentration possible)
+	Attaques possibles PoS : 
+		Long Range (création d'un fork alternatif dans la blockchain), évitable par checkpoint pour éviter de remonter (trop) dans le temps. 
+		Nothing at Stake (deux parties disjointes du réseau, transactions différentes en parallèle), évitable en sanctionnant le soutien de plusieurs chaines en parallèle
+		Pot-De-Vin (paiement pourr validation / corruption)
+		Censure (contrôle, filtre de certaines transactions)
+	
