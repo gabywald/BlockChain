@@ -80,6 +80,28 @@ class NoobChainSimplePOWTests {
 	}
 	
 //	@Test
+//	public void testPartPoWREtest() {
+//	    NoobChainSimplePOW blockchain = new NoobChainSimplePOW();
+//	    blockchain.addTransaction(new Transaction("A", "B", 10));
+//
+//	    // Minage d'un bloc
+//	    Block newBlock = blockchain.mineBlock(blockchain.getLastHash());
+//
+//	    // Vérification : le hash du bloc respecte la difficulté
+//	    assertTrue(newBlock.getHash().startsWith("000")); // Exemple : difficulté = 3 zéros
+//
+//	    // Vérification : la transaction est bien dans le bloc
+//	    assertEquals(1, newBlock.getTransactions().size());
+//
+//	    // Vérification : les soldes sont mis à jour
+//	    assertEquals(90, blockchain.getBalance("A")); // Supposons un solde initial de 100
+//	    assertEquals(10, blockchain.getBalance("B"));
+//
+//	    // Vérification : la chaîne est valide
+//	    assertTrue(blockchain.isChainValid());
+//	}
+	
+//	@Test
 //	void testPartPoWbis() {
 //		
 //		BlockChain blockchain = BlockChain.build();

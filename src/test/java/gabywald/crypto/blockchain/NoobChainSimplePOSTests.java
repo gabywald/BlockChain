@@ -149,5 +149,29 @@ class NoobChainSimplePOSTests {
 		Assertions.assertTrue( BlockChain.isChainValidV2( blockchain, genesisTransaction0A, difficulty ) );
 		// XXX BUG Assertions.assertTrue( TransactionOutputsContainer.checkBalances(walletA, 75f, walletB, 25f, mapUTXOs) );
 	}
+	
+//	@Test
+//	public void testPartPoSsimpleREtest() {
+//		BlockChain blockchain = BlockChain.build();
+//	    Wallet validator1 = new Wallet("validator1");
+//	    Wallet validator2 = new Wallet("validator2");
+//
+//	    // Ajout des validateurs avec des stakes différents
+//	    blockchain.addValidator(validator1, 1000); // Stake de 1000
+//	    blockchain.addValidator(validator2, 500);  // Stake de 500
+//
+//	    // Création et validation d'un bloc
+//	    Block newBlock = new Block("data", blockchain.getLastHash());
+//	    blockchain.mineBlock(newBlock);
+//
+//	    // Vérification : le validateur avec le plus gros stake a miné le bloc
+//	    assertEquals(validator1.getPublicKey(), newBlock.getValidator());
+//
+//	    // Vérification : le solde du validateur a été mis à jour (récompense)
+//	    assertEquals(1010, validator1.getBalance()); // +10 de récompense
+//
+//	    // Vérification : la chaîne est toujours valide
+//	    assertTrue(blockchain.isChainValid());
+//	}
 
 }
