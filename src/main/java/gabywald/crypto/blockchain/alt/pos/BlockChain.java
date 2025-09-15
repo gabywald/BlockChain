@@ -3,6 +3,8 @@ package gabywald.crypto.blockchain.alt.pos;
 import java.util.ArrayList;
 import java.util.Random;
 
+import gabywald.crypto.blockchain.alt.Wallet;
+
 /**
  * 
  * @author Gabriel Chandesris (2025)
@@ -70,7 +72,7 @@ public class BlockChain {
 
 	public void addBlock(String data) {
 		Wallet validator = this.selectValidator();
-		Block newBlock = new Block(data, this.getLatestBlock().hash, validator.publicKey);
+		Block newBlock = new Block(data, this.getLatestBlock().hash, validator.getName());
 		// Simuler une validation invalide (ex: bloc corrompu)
 		if (newBlock.getData().contains("INVALID")) {
 			penalizeValidator(validator);

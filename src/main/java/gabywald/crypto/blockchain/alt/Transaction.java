@@ -1,8 +1,11 @@
-package gabywald.crypto.blockchain.alt.pos;
+package gabywald.crypto.blockchain.alt;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.security.SignatureException;
 
 /**
  * 
@@ -20,7 +23,8 @@ public class Transaction {
 		this.amount = amount;
 	}
 
-	public void signTransaction(PrivateKey privateKey) throws Exception {
+	public void signTransaction(PrivateKey privateKey) 
+			throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 		String data = this.sender + this.receiver + this.amount;
 		Signature sig = Signature.getInstance("SHA256withRSA");
 		sig.initSign(privateKey);
@@ -28,7 +32,8 @@ public class Transaction {
 		this.signature = sig.sign();
 	}
 
-	public boolean verifyTransaction(PublicKey publicKey) throws Exception {
+	public boolean verifyTransaction(PublicKey publicKey) 
+			throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 		String data = this.sender + this.receiver + this.amount;
 		Signature sig = Signature.getInstance("SHA256withRSA");
 		sig.initVerify(publicKey);

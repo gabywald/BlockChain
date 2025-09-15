@@ -181,7 +181,7 @@ public class BlockChain extends JSONifiable {
 				for (TransactionInput input: currentTransaction.getInputs()) {	
 					tempOutput = tempUTXOs.getTransactionOutput(input.getTransactionOutputId() );
 					
-					Logger.printlnLog(LoggerLevel.LL_ERROR, "{" + tempOutput + "} for [" + input.getTransactionOutputId() + "]");
+					Logger.printlnLog(LoggerLevel.LL_ERROR, "tempOutput {" + tempOutput + "} for [" + input.getTransactionOutputId() + "]");
 
 					if (tempOutput == null) {
 						Logger.printlnLog(LoggerLevel.LL_ERROR, "#Referenced input on Transaction(" + t + ") is Missing");

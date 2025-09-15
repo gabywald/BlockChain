@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import gabywald.crypto.blockchain.alt.pos.BlockChain;
-import gabywald.crypto.blockchain.alt.pos.Wallet;
 
 /**
  * Tests about Alt BlockChain PoS
