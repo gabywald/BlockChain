@@ -23,10 +23,6 @@ public class Block {
 		this.hash = calculateHash();
 	}
 
-	public Block(String string, String previousHash, PublicKey publicKey) {
-		// TODO Auto-generated constructor stub
-	}
-
 	public String calculateHash() {
 		String input = this.previousHash + this.timeStamp + getData() + this.validator;
 		try {
@@ -40,6 +36,7 @@ public class Block {
 			}
 			return hexString.toString();
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			throw new RuntimeException(e);
 		}
 	}
